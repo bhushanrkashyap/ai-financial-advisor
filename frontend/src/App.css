@@ -1,127 +1,145 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  color: #333;
-}
-
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
 .app {
-  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  color: white;
-  padding: 40px 20px;
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8, 12, 20, 0.85);
+  backdrop-filter: blur(12px);
 }
 
-.header h1 {
-  font-size: 2.5em;
-  margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
 }
 
-.header p {
-  font-size: 1.1em;
-  opacity: 0.9;
+.header-brand h1 {
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.header-brand p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  max-width: 28rem;
 }
 
 .container {
   flex: 1;
-  padding: 40px 20px;
-  max-width: 1400px;
-  margin: 0 auto;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
 }
 
 .content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  height: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
 }
 
 .form-section,
 .results-section {
-  display: flex;
-  flex-direction: column;
+  min-width: 0;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.5rem 1.75rem;
+  box-shadow: var(--shadow-card);
 }
 
 .card h2 {
-  color: #667eea;
-  margin-bottom: 25px;
-  font-size: 1.5em;
-  border-bottom: 2px solid #667eea;
-  padding-bottom: 15px;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
 }
 
 .error {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 15px 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 .loading {
   text-align: center;
-  padding: 40px 20px;
-  color: #667eea;
-  font-size: 1.2em;
+  padding: 2.5rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.loading::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  margin: 0 auto 1rem;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .no-results {
   text-align: center;
-  padding: 60px 20px;
-  color: #999;
+  padding: 2.5rem 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 960px) {
   .content {
     grid-template-columns: 1fr;
   }
 
-  .header h1 {
-    font-size: 1.8em;
+  .header-inner {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 520px) {
   .container {
-    padding: 20px;
+    padding: 1rem 0.85rem 2rem;
   }
 
   .card {
-    padding: 20px;
-  }
-
-  .header {
-    padding: 30px 20px;
+    padding: 1.15rem;
   }
 }

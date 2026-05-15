@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import '../styles/components.css';
+import { useEffect, useState } from "react";
+import { API_BASE, JAVA_BASE } from "../config";
+import "../styles/components.css";
 
 interface ServiceStatus {
   backend: boolean;
@@ -11,55 +12,62 @@ export function SystemStatus() {
   const [status, setStatus] = useState<ServiceStatus>({
     backend: false,
     model: false,
-    java: true, // Java runs separately
+    java: false,
   });
 
   useEffect(() => {
     const checkHealth = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/health', { method: 'GET' });
-        if (response.ok) {
-          setStatus(prev => ({ ...prev, backend: true }));
+      let backendOk = false;
+      let modelOk = false;
+      let javaOk = false;
 
-          // Check model info
-          try {
-            const modelResponse = await fetch('http://localhost:8000/api/credit/model-info', {
-              method: 'GET',
-            });
-            if (modelResponse.ok) {
-              setStatus(prev => ({ ...prev, model: true }));
-            }
-          } catch {
-            setStatus(prev => ({ ...prev, model: false }));
-          }
-        }
+      try {
+        const response = await fetch(`${API_BASE}/health`, { method: "GET" });
+        if (response.ok) backendOk = true;
       } catch {
-        setStatus(prev => ({ ...prev, backend: false, model: false }));
+        backendOk = false;
       }
+
+      if (backendOk) {
+        try {
+          const modelResponse = await fetch(`${API_BASE}/api/credit/model-info`, { method: "GET" });
+          if (modelResponse.ok) {
+            const data = (await modelResponse.json()) as { is_loaded?: boolean };
+            modelOk = Boolean(data.is_loaded);
+          }
+        } catch {
+          modelOk = false;
+        }
+      }
+
+      try {
+        const javaRes = await fetch(`${JAVA_BASE}/api/engine/health`, { method: "GET" });
+        javaOk = javaRes.ok;
+      } catch {
+        javaOk = false;
+      }
+
+      setStatus({ backend: backendOk, model: modelOk, java: javaOk });
     };
 
-    checkHealth();
-    const interval = setInterval(checkHealth, 5000);
+    void checkHealth();
+    const interval = setInterval(() => void checkHealth(), 8000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="status-bar">
+    <div className="status-bar" aria-live="polite">
       <div className="status-item">
-        <span className={`status-indicator ${status.backend ? 'active' : 'inactive'}`}></span>
-        <span>Backend API</span>
+        <span className={`status-indicator ${status.backend ? "active" : "inactive"}`} />
+        <span>API</span>
       </div>
       <div className="status-item">
-        <span className={`status-indicator ${status.model ? 'active' : 'inactive'}`}></span>
-        <span>ML Model</span>
+        <span className={`status-indicator ${status.model ? "active" : "inactive"}`} />
+        <span>Model</span>
       </div>
       <div className="status-item">
-        <span className={`status-indicator ${status.java ? 'active' : 'inactive'}`}></span>
-        <span>Java Engine</span>
-      </div>
-      <div className="status-item">
-        <span className={`status-indicator ${status.backend ? 'active' : 'inactive'}`}></span>
-        <span>System Ready</span>
+        <span className={`status-indicator ${status.java ? "active" : "inactive"}`} />
+        <span>Java</span>
       </div>
     </div>
   );

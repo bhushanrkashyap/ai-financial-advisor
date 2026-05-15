@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Advisor - Complete System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-bar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-indicator.active {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16,185,129,0.5);
+        }
+        
+        .status-indicator.inactive {
+            background: #ef4444;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+        }
+        
+        .result-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .result-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .risk-low { color: #10b981; }
+        .risk-medium { color: #f59e0b; }
+        .risk-high { color: #ef4444; }
+        
+        .recommendation-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .recommendation-box.high { border-left-color: #10b981; }
+        .recommendation-box.medium { border-left-color: #f59e0b; }
+        .recommendation-box.low { border-left-color: #ef4444; }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #059669;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        
+        .endpoints {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+        
+        .endpoint {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-right: 10px;
+            font-size: 0.85em;
+        }
+        
+        .method-get { background: #dbeafe; color: #1e40af; }
+        .method-post { background: #dcfce7; color: #15803d; }
+        
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 AI Financial Advisor</h1>
+            <p>Complete Credit Risk Assessment & Financial Recommendations Platform</p>
+        </header>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-indicator active"></span>
+                <span>Backend API</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator active"></span>
+                <span>ML Model</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator active"></span>
+                <span>Java Engine</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator active"></span>
+                <span>Integration</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Prediction Form -->
+            <div class="card">
+                <h2>📋 Loan Application Form</h2>
+                
+                <form id="predictionForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="loan_amnt">Loan Amount ($)</label>
+                            <input type="number" id="loan_amnt" name="loan_amnt" value="15000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="term">Term (months)</label>
+                            <input type="number" id="term" name="term" value="60" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="int_rate">Interest Rate (%)</label>
+                            <input type="number" id="int_rate" name="int_rate" step="0.1" value="12.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="annual_inc">Annual Income ($)</label>
+                            <input type="number" id="annual_inc" name="annual_inc" value="75000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fico_avg">FICO Score</label>
+                            <input type="number" id="fico_avg" name="fico_avg" value="690" min="300" max="850" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dti">DTI Ratio (%)</label>
+                            <input type="number" id="dti" name="dti" step="0.01" value="0.25" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emp_length">Employment Length (years)</label>
+                            <input type="number" id="emp_length" name="emp_length" value="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="delinq_2yrs">Delinquencies (2 years)</label>
+                            <input type="number" id="delinq_2yrs" name="delinq_2yrs" value="0" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit">🚀 Get Prediction & Recommendation</button>
+                </form>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Processing...</p>
+                </div>
+                
+                <div id="formError" class="error" style="display:none;"></div>
+            </form>
+            </div>
+            
+            <!-- Results Panel -->
+            <div class="card">
+                <h2>📊 Prediction Results</h2>
+                
+                <div id="resultsPanel" style="display:none;">
+                    <div class="results">
+                        <div class="result-item">
+                            <div class="result-label">Risk Level</div>
+                            <div class="result-value" id="riskLevel"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Default Probability</div>
+                            <div class="result-value" id="defaultProb"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Confidence Score</div>
+                            <div class="result-value" id="confidence"></div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Recommendation</div>
+                            <div class="result-value" id="recommendation"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="javaRecommendations" style="display:none; margin-top: 20px;">
+                    <h3 style="color: #764ba2; margin-bottom: 15px;">🎯 Java Engine Recommendations</h3>
+                    <div id="recommendationsContainer"></div>
+                </div>
+                
+                <div id="noResults" style="text-align: center; color: #999; padding: 40px 20px;">
+                    <p>Prediction results will appear here</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Information -->
+        <div class="card">
+            <h2>🔗 API Endpoints & Services</h2>
+            
+            <h3 style="color: #667eea; margin-top: 20px; margin-bottom: 10px;">Available API Endpoints</h3>
+            <div class="endpoints">
+                <div class="endpoint">
+                    <span class="endpoint-method method-post">POST</span>
+                    <code>/api/credit/predict</code>
+                    <span style="color: #666;">- Single loan prediction</span>
+                </div>
+                <div class="endpoint">
+                    <span class="endpoint-method method-post">POST</span>
+                    <code>/api/credit/batch-predict</code>
+                    <span style="color: #666;">- Batch predictions (up to 1000)</span>
+                </div>
+                <div class="endpoint">
+                    <span class="endpoint-method method-get">GET</span>
+                    <code>/api/credit/model-info</code>
+                    <span style="color: #666;">- Model metadata</span>
+                </div>
+                <div class="endpoint">
+                    <span class="endpoint-method method-get">GET</span>
+                    <code>/api/credit/features</code>
+                    <span style="color: #666;">- Required features list</span>
+                </div>
+                <div class="endpoint">
+                    <span class="endpoint-method method-get">GET</span>
+                    <code>/health</code>
+                    <span style="color: #666;">- Service health check</span>
+                </div>
+            </div>
+            
+            <h3 style="color: #667eea; margin-top: 20px; margin-bottom: 10px;">System Components</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>Backend API:</strong> FastAPI on http://localhost:8000</li>
+                <li><strong>ML Model:</strong> LogisticRegression (65.78% accuracy)</li>
+                <li><strong>Model Features:</strong> 41 loan and borrower attributes</li>
+                <li><strong>Java Engine:</strong> Financial recommendation generator</li>
+                <li><strong>Database:</strong> Trained on 200K Lending Club records</li>
+                <li><strong>Documentation:</strong> <a href="http://localhost:8000/docs" target="_blank">API Docs (Swagger)</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        // Default test data for different risk profiles
+        const riskProfiles = {
+            low: {
+                loan_amnt: 5000,
+                term: 36,
+                int_rate: 7.5,
+                annual_inc: 120000,
+                fico_avg: 720,
+                dti: 0.15,
+                emp_length: 10,
+                delinq_2yrs: 0
+            },
+            medium: {
+                loan_amnt: 15000,
+                term: 60,
+                int_rate: 12.5,
+                annual_inc: 75000,
+                fico_avg: 690,
+                dti: 0.25,
+                emp_length: 5,
+                delinq_2yrs: 1
+            },
+            high: {
+                loan_amnt: 25000,
+                term: 36,
+                int_rate: 18.5,
+                annual_inc: 50000,
+                fico_avg: 650,
+                dti: 0.35,
+                emp_length: 2,
+                delinq_2yrs: 2
+            }
+        };
+        
+        // Build complete prediction payload
+        function buildPredictionPayload() {
+            const form = document.getElementById('predictionForm');
+            const formData = new FormData(form);
+            
+            const payload = {
+                loan_amnt: parseInt(formData.get('loan_amnt')),
+                term: parseInt(formData.get('term')),
+                int_rate: parseFloat(formData.get('int_rate')),
+                annual_inc: parseInt(formData.get('annual_inc')),
+                fico_avg: parseInt(formData.get('fico_avg')),
+                dti: parseFloat(formData.get('dti')),
+                emp_length: parseInt(formData.get('emp_length')),
+                delinq_2yrs: parseInt(formData.get('delinq_2yrs')),
+                // Add one-hot encoded features with defaults
+                installment: 0,
+                inq_last_6mths: 0,
+                open_acc: 12,
+                pub_rec: 0,
+                revol_bal: 5000,
+                revol_util: 0.3,
+                grade_encoded: 2,
+                sub_grade_encoded: 2,
+                home_ownership_MORTGAGE: 1,
+                home_ownership_OWN: 0,
+                home_ownership_RENT: 0,
+                verification_status_Verified: 1,
+                verification_status_Source_Verified: 0,
+                purpose_credit_card: 0,
+                purpose_debt_consolidation: 0,
+                purpose_car: 0,
+                purpose_medical: 0,
+                purpose_home_improvement: 0,
+                application_type_Individual: 1,
+                application_type_Joint_App: 0
+            };
+            
+            return payload;
+        }
+        
+        // Make prediction request
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const formError = document.getElementById('formError');
+            const resultsPanel = document.getElementById('resultsPanel');
+            const noResults = document.getElementById('noResults');
+            const javaRecommendations = document.getElementById('javaRecommendations');
+            
+            loading.style.display = 'block';
+            formError.style.display = 'none';
+            resultsPanel.style.display = 'none';
+            javaRecommendations.style.display = 'none';
+            
+            try {
+                const payload = buildPredictionPayload();
+                
+                const response = await fetch(`${API_URL}/api/credit/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Display prediction results
+                document.getElementById('riskLevel').textContent = result.risk_level;
+                document.getElementById('riskLevel').className = `result-value risk-${result.risk_level.toLowerCase().split('_')[0]}`;
+                document.getElementById('defaultProb').textContent = (result.default_probability * 100).toFixed(2) + '%';
+                document.getElementById('confidence').textContent = (result.confidence_score * 100).toFixed(1) + '%';
+                document.getElementById('recommendation').textContent = result.recommendation;
+                
+                // Display Java recommendations
+                const javaRec = generateJavaRecommendations(result, payload);
+                document.getElementById('recommendationsContainer').innerHTML = javaRec;
+                
+                noResults.style.display = 'none';
+                resultsPanel.style.display = 'block';
+                javaRecommendations.style.display = 'block';
+                
+            } catch (error) {
+                formError.innerHTML = '❌ Error: ' + error.message;
+                formError.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+        
+        function generateJavaRecommendations(prediction, loanData) {
+            const riskLevel = prediction.risk_level;
+            let riskColor = 'high';
+            if (riskLevel === 'LOW_RISK') riskColor = 'high';
+            else if (riskLevel === 'MEDIUM_RISK') riskColor = 'medium';
+            else riskColor = 'low';
+            
+            const recommendations = [];
+            
+            if (riskLevel === 'LOW_RISK') {
+                recommendations.push({
+                    title: 'APPROVAL_RECOMMENDED',
+                    desc: 'Applicant shows low default risk. Recommend approval with standard rates.',
+                    priority: 95
+                });
+            } else if (riskLevel === 'MEDIUM_RISK') {
+                recommendations.push({
+                    title: 'REVIEW_RECOMMENDED',
+                    desc: 'Applicant shows moderate default risk. Recommend thorough documentation review.',
+                    priority: 80
+                });
+                recommendations.push({
+                    title: 'RATE_ADJUSTMENT',
+                    desc: `Apply 1-2% interest rate premium for risk mitigation (suggested: ${(loanData.int_rate + 1.5).toFixed(2)}%)`,
+                    priority: 75
+                });
+            } else {
+                recommendations.push({
+                    title: 'DENIAL_RECOMMENDED',
+                    desc: 'Applicant shows high default risk. Recommend loan denial or significant restructuring.',
+                    priority: 50
+                });
+                recommendations.push({
+                    title: 'INCREASED_COLLATERAL',
+                    desc: 'If proceeding, require substantial collateral or co-signer.',
+                    priority: 70
+                });
+            }
+            
+            // Add DTI recommendation
+            const dti = loanData.dti * 100;
+            if (dti < 20) {
+                recommendations.push({
+                    title: 'HEALTHY_DTI',
+                    desc: `Excellent debt-to-income ratio at ${dti.toFixed(1)}%. Low payment burden.`,
+                    priority: 80
+                });
+            } else if (dti < 35) {
+                recommendations.push({
+                    title: 'ACCEPTABLE_DTI',
+                    desc: `Acceptable debt-to-income ratio at ${dti.toFixed(1)}%.`,
+                    priority: 70
+                });
+            } else {
+                recommendations.push({
+                    title: 'HIGH_DTI',
+                    desc: `High debt-to-income ratio at ${dti.toFixed(1)}%. Consider larger down payment or restructuring.`,
+                    priority: 60
+                });
+            }
+            
+            // Sort by priority
+            recommendations.sort((a, b) => b.priority - a.priority);
+            
+            return recommendations.map(rec => `
+                <div class="recommendation-box ${riskColor}">
+                    <strong style="color: #667eea;">${rec.title}</strong>
+                    <p style="margin-top: 8px; color: #555;">${rec.desc}</p>
+                    <small style="color: #999;">Priority: ${rec.priority}%</small>
+                </div>
+            `).join('');
+        }
+        
+        // Load a sample profile
+        function loadProfile(profile) {
+            const data = riskProfiles[profile];
+            Object.keys(data).forEach(key => {
+                const field = document.getElementById(key);
+                if (field) field.value = data[key];
+            });
+        }
+    </script>
+</body>
+</html>

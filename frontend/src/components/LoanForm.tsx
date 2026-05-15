@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import '../styles/components.css';
+import { useState } from "react";
+import "../styles/components.css";
 
 interface LoanFormProps {
-  onPredict: (data: Record<string, any>) => void;
+  onPredict: (data: Record<string, unknown>) => void;
   loading: boolean;
 }
 
@@ -40,31 +40,30 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    const numValue = type === 'number' ? parseFloat(value) : value === 'true' ? true : value === 'false' ? false : value;
-    setFormData(prev => ({ ...prev, [name]: numValue }));
+    const numValue =
+      type === "number" ? parseFloat(value) : value === "true" ? true : value === "false" ? false : value;
+    setFormData((prev) => ({ ...prev, [name]: numValue }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Client-side validation for extremely risky profiles
+
     const fico = formData.fico_avg;
     const dti = formData.dti;
     const delinq = formData.delinq_2yrs;
     const income = formData.annual_inc;
     const loan = formData.loan_amnt;
 
-    const warnings = [];
-    if (fico < 500) warnings.push("⚠️ FICO score < 500 (critical)");
-    if (dti > 0.50) warnings.push("⚠️ DTI > 50% (unsustainable)");
-    if (delinq > 3) warnings.push("⚠️ Delinquencies > 3");
-    if (income < 15000 && loan > 50000) warnings.push("⚠️ Insufficient income for loan");
-    if (fico < 600 && dti > 0.40) warnings.push("⚠️ Poor credit + high DTI combo");
+    const warnings: string[] = [];
+    if (fico < 500) warnings.push("FICO score under 500 (critical risk).");
+    if (dti > 0.5) warnings.push("DTI above 50% (may be unsustainable).");
+    if (delinq > 3) warnings.push("More than 3 delinquencies in 2 years.");
+    if (income < 15000 && loan > 50000) warnings.push("Income may be insufficient for this loan size.");
+    if (fico < 600 && dti > 0.4) warnings.push("Weak credit combined with elevated DTI.");
 
     if (warnings.length > 0) {
       const msg = warnings.join("\n");
-      console.warn("Risk flags detected:\n" + msg);
-      if (!confirm(`Red flags detected:\n${msg}\n\nProceed anyway?`)) {
+      if (!confirm(`Risk flags:\n\n${msg}\n\nContinue with prediction?`)) {
         return;
       }
     }
@@ -74,123 +73,91 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
 
   return (
     <div className="card form-card">
-      <h2>📋 Loan Application</h2>
+      <h2>Loan application</h2>
       <form onSubmit={handleSubmit} className="loan-form">
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="loan_amnt">Loan Amount ($)</label>
+            <label htmlFor="loan_amnt">Loan amount (USD)</label>
             <input
               type="number"
               id="loan_amnt"
               name="loan_amnt"
               value={formData.loan_amnt}
               onChange={handleChange}
-              min="1000"
-              max="100000"
-              step="1000"
+              min={1000}
+              max={100000}
+              step={1000}
             />
           </div>
           <div className="form-group">
             <label htmlFor="term">Term (months)</label>
-            <input
-              type="number"
-              id="term"
-              name="term"
-              value={formData.term}
-              onChange={handleChange}
-              min="12"
-              max="84"
-            />
+            <input type="number" id="term" name="term" value={formData.term} onChange={handleChange} min={12} max={84} />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="int_rate">Interest Rate (%)</label>
+            <label htmlFor="int_rate">Interest rate (%)</label>
             <input
               type="number"
               id="int_rate"
               name="int_rate"
               value={formData.int_rate}
               onChange={handleChange}
-              step="0.1"
-              min="1"
-              max="30"
+              step={0.1}
+              min={1}
+              max={30}
             />
           </div>
           <div className="form-group">
-            <label htmlFor="annual_inc">Annual Income ($)</label>
+            <label htmlFor="annual_inc">Annual income (USD)</label>
             <input
               type="number"
               id="annual_inc"
               name="annual_inc"
               value={formData.annual_inc}
               onChange={handleChange}
-              min="10000"
-              max="500000"
-              step="5000"
+              min={10000}
+              max={500000}
+              step={5000}
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="fico_avg">FICO Score</label>
-            <input
-              type="number"
-              id="fico_avg"
-              name="fico_avg"
-              value={formData.fico_avg}
-              onChange={handleChange}
-              min="300"
-              max="850"
-            />
+            <label htmlFor="fico_avg">FICO score</label>
+            <input type="number" id="fico_avg" name="fico_avg" value={formData.fico_avg} onChange={handleChange} min={300} max={850} />
           </div>
           <div className="form-group">
-            <label htmlFor="dti">DTI Ratio (Decimal: 0.0-1.0)</label>
+            <label htmlFor="dti">Debt-to-income (0–1)</label>
             <input
               type="number"
               id="dti"
               name="dti"
               value={formData.dti}
               onChange={handleChange}
-              step="0.01"
-              min="0"
-              max="1"
-              placeholder="e.g., 0.25 for 25%"
+              step={0.01}
+              min={0}
+              max={1}
+              placeholder="0.25 = 25%"
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="emp_length">Employment Length (years)</label>
-            <input
-              type="number"
-              id="emp_length"
-              name="emp_length"
-              value={formData.emp_length}
-              onChange={handleChange}
-              min="0"
-              max="50"
-            />
+            <label htmlFor="emp_length">Employment (years)</label>
+            <input type="number" id="emp_length" name="emp_length" value={formData.emp_length} onChange={handleChange} min={0} max={50} />
           </div>
           <div className="form-group">
-            <label htmlFor="delinq_2yrs">Delinquencies (2 years)</label>
-            <input
-              type="number"
-              id="delinq_2yrs"
-              name="delinq_2yrs"
-              value={formData.delinq_2yrs}
-              onChange={handleChange}
-              min="0"
-              max="10"
-            />
+            <label htmlFor="delinq_2yrs">Delinquencies (2y)</label>
+            <input type="number" id="delinq_2yrs" name="delinq_2yrs" value={formData.delinq_2yrs} onChange={handleChange} min={0} max={10} />
           </div>
         </div>
 
         <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? 'Processing...' : '🚀 Get Prediction'}
+          {loading ? "Working…" : "Get prediction"}
         </button>
       </form>
     </div>

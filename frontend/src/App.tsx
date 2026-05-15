@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import './App.css';
-import { LoanForm } from './components/LoanForm';
-import { PredictionResults } from './components/PredictionResults';
+import { useState } from "react";
+import "./App.css";
+import { API_BASE } from "./config";
+import { LoanForm } from "./components/LoanForm";
+import { PredictionResults } from "./components/PredictionResults";
+import { SystemStatus } from "./components/SystemStatus";
 
 interface Prediction {
   prediction: string;
@@ -17,26 +19,27 @@ export function App() {
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePredict = async (formData: Record<string, any>) => {
+  const handlePredict = async (formData: Record<string, unknown>) => {
     setLoading(true);
     setError(null);
     setPrediction(null);
 
     try {
-      const response = await fetch('http://localhost:8000/api/credit/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`${API_BASE}/api/credit/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        const detail = await response.text();
+        throw new Error(detail ? `${response.status}: ${detail.slice(0, 120)}` : `API error ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as Prediction;
       setPrediction(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -45,8 +48,13 @@ export function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>💰 AI Financial Advisor</h1>
-        <p>Credit Risk Assessment & Financial Recommendations Platform</p>
+        <div className="header-inner">
+          <div className="header-brand">
+            <h1>AI Financial Advisor</h1>
+            <p>Credit risk scoring and recommendation preview powered by your FastAPI and Java services.</p>
+          </div>
+          <SystemStatus />
+        </div>
       </header>
 
       <div className="container">
@@ -57,11 +65,14 @@ export function App() {
 
           <div className="results-section">
             {error && <div className="error">{error}</div>}
-            {loading && <div className="loading">Processing...</div>}
+            {loading && <div className="loading">Running model and recommendation engine…</div>}
             {prediction && <PredictionResults prediction={prediction} />}
             {!prediction && !loading && !error && (
-              <div className="no-results">
-                <p>Fill in the loan details and submit to see predictions</p>
+              <div className="card">
+                <h2>Results</h2>
+                <div className="no-results">
+                  Submit the loan application to see risk scores, probabilities, and the blended recommendation.
+                </div>
               </div>
             )}
           </div>
