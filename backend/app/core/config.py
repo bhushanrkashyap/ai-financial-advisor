@@ -8,5 +8,9 @@ class Settings(BaseSettings):
     app_env: str = "development"
     debug: bool = False
 
+    java_engine_url: str = "http://localhost:8081/api/engine/recommend"
+    java_engine_timeout_seconds: float = 5.0
+    prediction_verbose_logs: bool = False
+
 
 settings = Settings()

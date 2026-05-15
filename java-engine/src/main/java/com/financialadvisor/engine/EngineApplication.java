@@ -1,14 +1,17 @@
 package com.financialadvisor.engine;
 
-/**
- * JVM entrypoint for the finance recommendation engine (skeleton).
- */
-public final class EngineApplication {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-    private EngineApplication() {
-    }
+/**
+ * JVM entrypoint for the finance recommendation engine.
+ * 
+ * Runs as a Spring Boot REST API service on port 8080
+ */
+@SpringBootApplication
+public class EngineApplication {
 
     public static void main(String[] args) {
-        // Placeholder: wire HTTP/gRPC server or batch runner here.
+        SpringApplication.run(EngineApplication.class, args);
     }
 }

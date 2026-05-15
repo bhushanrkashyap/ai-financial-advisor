@@ -30,4 +30,24 @@ Copy `.env.example` to `.env` at the repository root and adjust values before ru
 
 ## License
 
-Specify your license here.
+This project is licensed under the MIT License — see the `LICENSE` file for details.
+
+## Ready for GitHub
+
+This repository has been prepared for publishing to GitHub:
+
+- Added a `.gitignore` to exclude build artifacts and large files.
+- Included an `LICENSE` (MIT).
+
+Quick push example:
+
+```bash
+git init
+git add .
+git commit -m "chore: initial repository cleanup and license"
+git branch -M main
+git remote add origin <your-repo-url>
+git push -u origin main
+```
+
+Replace `<your-repo-url>` with your GitHub repository URL.
