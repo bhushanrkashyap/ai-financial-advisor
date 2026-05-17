@@ -248,16 +248,6 @@ class CreditDefaultPredictionService:
                 "confidence_score": 0.95,
             }
 
-        if annual_inc < 15000 and loan_amnt > 50000:
-            return {
-                "prediction": "DEFAULT_RISK",
-                "default_probability": 0.88,
-                "safe_probability": 0.12,
-                "risk_level": "HIGH_RISK",
-                "recommendation": "✗ Application REJECTED. Income insufficient for loan amount.",
-                "confidence_score": 0.92,
-            }
-
         if fico < 600 and dti > 0.40:
             return {
                 "prediction": "DEFAULT_RISK",
@@ -325,6 +315,72 @@ class CreditDefaultPredictionService:
             else:
                 return "✗ Loan not recommended. High risk of default."
 
+    def get_visualization_data(self, prediction_result: dict) -> dict:
+        """Generate visualization data for prediction results.
+
+        Parameters
+        ----------
+        prediction_result : dict
+            Result from predict() method
+
+        Returns
+        -------
+        dict
+            Visualization-ready data including charts and metrics
+        """
+        prob_default = prediction_result.get("default_probability", 0)
+        prob_safe = prediction_result.get("safe_probability", 1 - prob_default)
+        risk_level = prediction_result.get("risk_level", "UNKNOWN")
+        confidence = prediction_result.get("confidence_score", 0)
+
+        # Risk gauge visualization data
+        risk_colors = {
+            "LOW_RISK": "#2ecc71",      # Green
+            "MEDIUM_RISK": "#f39c12",   # Orange
+            "HIGH_RISK": "#e74c3c",     # Red
+        }
+
+        viz_data = {
+            "probability_chart": {
+                "type": "pie",
+                "data": {
+                    "labels": ["Default Risk", "Safe"],
+                    "datasets": [{
+                        "data": [prob_default * 100, prob_safe * 100],
+                        "backgroundColor": ["#e74c3c", "#2ecc71"],
+                        "borderColor": ["#c0392b", "#27ae60"],
+                        "borderWidth": 2
+                    }]
+                },
+                "options": {
+                    "responsive": True,
+                    "plugins": {
+                        "title": {"text": "Default Risk Probability"}
+                    }
+                }
+            },
+            "risk_gauge": {
+                "type": "gauge",
+                "value": prob_default,
+                "color": risk_colors.get(risk_level, "#95a5a6"),
+                "min": 0,
+                "max": 1,
+                "label": risk_level
+            },
+            "confidence_bar": {
+                "type": "bar",
+                "value": confidence * 100,
+                "label": f"Confidence: {confidence * 100:.1f}%"
+            },
+            "metrics": {
+                "default_probability": round(prob_default, 4),
+                "safe_probability": round(prob_safe, 4),
+                "risk_level": risk_level,
+                "confidence_score": round(confidence, 4)
+            }
+        }
+        return viz_data
+
     def batch_predict(self, input_data_list: list[dict]) -> list[dict]:
         """Make predictions for multiple loan applications.
 
@@ -338,7 +394,44 @@ class CreditDefaultPredictionService:
         list[dict]
             List of prediction results
         """
-        return [self.predict(input_data) for input_data in input_data_list]
+        results = [self.predict(input_data) for input_data in input_data_list]
+        
+        # Add batch visualization summary
+        viz_summary = self._generate_batch_visualization(results)
+        
+        return {
+            "predictions": results,
+            "visualization": viz_summary
+        }
+
+    def _generate_batch_visualization(self, predictions: list[dict]) -> dict:
+        """Generate visualization summary for batch predictions."""
+        if not predictions:
+            return {}
+        
+        risk_counts = {
+            "LOW_RISK": sum(1 for p in predictions if p.get("risk_level") == "LOW_RISK"),
+            "MEDIUM_RISK": sum(1 for p in predictions if p.get("risk_level") == "MEDIUM_RISK"),
+            "HIGH_RISK": sum(1 for p in predictions if p.get("risk_level") == "HIGH_RISK"),
+        }
+        
+        avg_default_prob = np.mean([p.get("default_probability", 0) for p in predictions])
+        
+        return {
+            "total_applications": len(predictions),
+            "risk_distribution": risk_counts,
+            "average_default_probability": round(avg_default_prob, 4),
+            "approval_rate": round((risk_counts["LOW_RISK"] + risk_counts["MEDIUM_RISK"]) / len(predictions) * 100, 2),
+            "chart_data": {
+                "type": "bar",
+                "labels": list(risk_counts.keys()),
+                "datasets": [{
+                    "label": "Application Count by Risk",
+                    "data": list(risk_counts.values()),
+                    "backgroundColor": ["#2ecc71", "#f39c12", "#e74c3c"]
+                }]
+            }
+        }
 
     def get_feature_names(self) -> list[str]:
         """Get list of required feature names."""
