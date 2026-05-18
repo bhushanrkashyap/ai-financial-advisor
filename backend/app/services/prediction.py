@@ -179,6 +179,43 @@ class CreditDefaultPredictionService:
             result["prediction"],
         )
 
+        # Record in analytics
+        try:
+            from app.services.analytics import get_analytics_service
+            
+            analytics = get_analytics_service()
+            
+            # Extract key fields for analytics
+            loan_amount = input_data.get("loan_amnt", 0)
+            fico_score = int(input_data.get("fico_avg", 650))
+            dti_ratio = float(input_data.get("dti", 0.3))
+            interest_rate = float(input_data.get("int_rate", 0))
+            
+            # Calculate approval probability for analytics
+            from app.services.financial_calculator import get_financial_calculator
+            calculator = get_financial_calculator()
+            approval_data = calculator.calculate_approval_probability_score(
+                prob_default,
+                dti_ratio,
+                fico_score,
+                int(input_data.get("emp_length", 0)),
+                int(input_data.get("delinq_2yrs", 0)),
+            )
+            approval_prob = approval_data.get("approval_probability", 0)
+            
+            analytics.record_application(
+                loan_amount=loan_amount,
+                fico_score=fico_score,
+                dti_ratio=dti_ratio,
+                interest_rate=interest_rate,
+                default_probability=prob_default,
+                approval_probability=approval_prob,
+                risk_level=risk_level,
+                prediction=result["prediction"],
+            )
+        except Exception as e:
+            logger.warning(f"Failed to record analytics: {e}")
+
         return result
 
     def _binary_safe_default_probs(self, proba: np.ndarray) -> tuple[float, float]:

@@ -510,3 +510,359 @@ async def analyze_scenarios(application: LoanApplicationInput) -> dict:
             status_code=500,
             detail="Failed to analyze scenarios",
         ) from e
+
+
+# ============= FINANCIAL CALCULATION ENDPOINTS =============
+
+
+@credit_router.post(
+    "/calculate-emi",
+    summary="Calculate EMI and financial breakdowns",
+    description="Calculates monthly EMI and financial metrics for a loan.",
+)
+async def calculate_emi(
+    loan_amount: float,
+    interest_rate: float,
+    term_months: int,
+) -> dict:
+    """Calculate EMI and financial metrics.
+
+    Parameters
+    ----------
+    loan_amount : float
+        Loan amount in USD
+    interest_rate : float
+        Annual interest rate (%)
+    term_months : int
+        Loan term in months
+
+    Returns
+    -------
+    dict
+        EMI calculation details
+    """
+    try:
+        from app.services.financial_calculator import get_financial_calculator
+        
+        if loan_amount <= 0 or term_months <= 0 or interest_rate < 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid loan parameters",
+            )
+
+        calculator = get_financial_calculator()
+        emi_data = calculator.calculate_emi(loan_amount, interest_rate, term_months)
+
+        return {
+            "monthly_emi": emi_data.monthly_emi,
+            "total_amount_payable": emi_data.total_amount_payable,
+            "total_interest": emi_data.total_interest,
+            "principal": emi_data.principal,
+            "term_months": emi_data.term_months,
+            "annual_interest_rate": emi_data.annual_interest_rate,
+            "monthly_interest_rate": emi_data.monthly_interest_rate,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error calculating EMI: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to calculate EMI",
+        ) from e
+
+
+@credit_router.post(
+    "/financial-summary",
+    summary="Get complete financial summary",
+    description="Returns comprehensive financial analysis including EMI, health metrics, and recommendations.",
+)
+async def get_financial_summary(application: LoanApplicationInput) -> dict:
+    """Get complete financial summary for an application.
+
+    Parameters
+    ----------
+    application : LoanApplicationInput
+        Loan application details
+
+    Returns
+    -------
+    dict
+        Complete financial analysis
+    """
+    try:
+        from app.services.financial_calculator import get_financial_calculator
+        from app.services.prediction import get_prediction_service
+        
+        calculator = get_financial_calculator()
+        pred_service = get_prediction_service()
+
+        input_data = application.model_dump(by_alias=True)
+
+        # Get prediction first
+        prediction = pred_service.predict(input_data)
+
+        # Calculate EMI
+        emi_data = calculator.calculate_emi(
+            application.loan_amnt,
+            application.int_rate,
+            application.term,
+        )
+
+        # Calculate financial health
+        health = calculator.calculate_financial_health(
+            application.annual_inc,
+            emi_data.monthly_emi,
+            employment_years=application.emp_length,
+            delinquencies=application.delinq_2yrs,
+        )
+
+        # Calculate approval probability
+        approval_score = calculator.calculate_approval_probability_score(
+            prediction["default_probability"],
+            application.dti,
+            application.fico_avg,
+            application.emp_length,
+            application.delinq_2yrs,
+        )
+
+        # Get recommendations
+        recommendations = calculator.calculate_improvement_recommendations(
+            application.fico_avg,
+            application.dti,
+            application.delinq_2yrs,
+            application.emp_length,
+            prediction["default_probability"],
+        )
+
+        return {
+            "loan_amount": application.loan_amnt,
+            "term_months": application.term,
+            "interest_rate": application.int_rate,
+            "emi_calculation": {
+                "monthly_emi": emi_data.monthly_emi,
+                "total_amount_payable": emi_data.total_amount_payable,
+                "total_interest": emi_data.total_interest,
+                "principal": emi_data.principal,
+                "term_months": emi_data.term_months,
+                "annual_interest_rate": emi_data.annual_interest_rate,
+                "monthly_interest_rate": emi_data.monthly_interest_rate,
+            },
+            "financial_health": {
+                "dti_ratio": health.dti_ratio,
+                "dti_category": health.dti_category,
+                "debt_to_income_percentage": health.debt_to_income_percentage,
+                "loan_to_income_ratio": health.loan_to_income_ratio,
+                "monthly_income": health.monthly_income,
+                "monthly_emi": health.monthly_emi,
+                "monthly_remaining_after_emi": health.monthly_remaining_after_emi,
+                "emi_affordability": health.emi_affordability,
+                "financial_health_score": health.financial_health_score,
+            },
+            "approval_probability": approval_score,
+            "recommendations": recommendations,
+            "prediction": prediction,
+        }
+
+    except Exception as e:
+        logger.error(f"Error generating financial summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate financial summary",
+        ) from e
+
+
+# ============= ANALYTICS ENDPOINTS =============
+
+
+@credit_router.get(
+    "/analytics/metrics",
+    summary="Get application metrics",
+    description="Returns aggregated metrics for recent applications.",
+)
+async def get_analytics_metrics(hours: int = 24) -> dict:
+    """Get analytics metrics for recent applications.
+
+    Parameters
+    ----------
+    hours : int
+        Number of hours to analyze (default: 24)
+
+    Returns
+    -------
+    dict
+        Aggregated metrics
+    """
+    try:
+        from app.services.analytics import get_analytics_service
+        
+        service = get_analytics_service()
+        metrics = service.get_metrics(hours=hours)
+
+        return {
+            "total_applications": metrics.total_applications,
+            "total_approved": metrics.total_approved,
+            "total_rejected": metrics.total_rejected,
+            "approval_rate": metrics.approval_rate,
+            "average_loan_amount": metrics.average_loan_amount,
+            "average_fico_score": int(metrics.average_fico_score),
+            "average_dti": metrics.average_dti,
+            "average_interest_rate": metrics.average_interest_rate,
+            "average_default_probability": metrics.average_default_probability,
+            "average_approval_probability": metrics.average_approval_probability,
+            "low_risk_count": metrics.low_risk_count,
+            "medium_risk_count": metrics.medium_risk_count,
+            "high_risk_count": metrics.high_risk_count,
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting analytics metrics: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get metrics",
+        ) from e
+
+
+@credit_router.get(
+    "/analytics/risk-distribution",
+    summary="Get risk distribution",
+    description="Returns the distribution of applications by risk level.",
+)
+async def get_risk_distribution(hours: int = 24) -> dict:
+    """Get risk distribution for applications.
+
+    Parameters
+    ----------
+    hours : int
+        Number of hours to analyze
+
+    Returns
+    -------
+    dict
+        Risk distribution data
+    """
+    try:
+        from app.services.analytics import get_analytics_service
+        
+        service = get_analytics_service()
+        distribution = service.get_risk_distribution(hours=hours)
+
+        return {
+            "low_risk_percentage": distribution.low_risk_percentage,
+            "medium_risk_percentage": distribution.medium_risk_percentage,
+            "high_risk_percentage": distribution.high_risk_percentage,
+            "low_risk_count": distribution.low_risk_count,
+            "medium_risk_count": distribution.medium_risk_count,
+            "high_risk_count": distribution.high_risk_count,
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting risk distribution: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get risk distribution",
+        ) from e
+
+
+@credit_router.get(
+    "/analytics/recent-applications",
+    summary="Get recent applications",
+    description="Returns the most recent loan applications.",
+)
+async def get_recent_applications(limit: int = 10) -> dict:
+    """Get recent applications.
+
+    Parameters
+    ----------
+    limit : int
+        Maximum number of applications to return
+
+    Returns
+    -------
+    dict
+        Recent applications data
+    """
+    try:
+        from app.services.analytics import get_analytics_service
+        
+        service = get_analytics_service()
+        applications = service.get_recent_applications(limit=limit)
+
+        return {
+            "applications": applications,
+            "count": len(applications),
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting recent applications: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get recent applications",
+        ) from e
+
+
+@credit_router.get(
+    "/analytics/approval-trend",
+    summary="Get approval trend",
+    description="Returns approval trend data over time.",
+)
+async def get_approval_trend(days: int = 7) -> dict:
+    """Get approval trend.
+
+    Parameters
+    ----------
+    days : int
+        Number of days to analyze
+
+    Returns
+    -------
+    dict
+        Approval trend data
+    """
+    try:
+        from app.services.analytics import get_analytics_service
+        
+        service = get_analytics_service()
+        trend = service.get_approval_trend(days=days)
+
+        return {
+            "trend": trend,
+            "days": days,
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting approval trend: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get approval trend",
+        ) from e
+
+
+@credit_router.get(
+    "/analytics/dashboard-summary",
+    summary="Get dashboard summary",
+    description="Returns complete dashboard summary data.",
+)
+async def get_dashboard_summary() -> dict:
+    """Get complete dashboard summary.
+
+    Returns
+    -------
+    dict
+        Complete dashboard data
+    """
+    try:
+        from app.services.analytics import get_analytics_service
+        
+        service = get_analytics_service()
+        summary = service.get_dashboard_summary()
+
+        return summary
+
+    except Exception as e:
+        logger.error(f"Error getting dashboard summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get dashboard summary",
+        ) from e

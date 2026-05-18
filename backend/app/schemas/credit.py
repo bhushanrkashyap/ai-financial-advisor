@@ -8,18 +8,18 @@ from pydantic import BaseModel, ConfigDict, Field
 class LoanApplicationInput(BaseModel):
     """Input schema for credit default prediction."""
 
-    loan_amnt: float = Field(..., ge=1000, le=100000, description="Loan amount in USD")
+    loan_amnt: float = Field(..., ge=50000, le=500000000, description="Loan amount in INR")
     term: int = Field(..., description="Loan term in months (36 or 60)")
     int_rate: float = Field(..., ge=0, le=30, description="Interest rate (annual %)")
-    installment: float = Field(..., ge=0, description="Monthly installment amount")
+    installment: float = Field(..., ge=0, description="Monthly installment amount in INR")
     emp_length: int = Field(..., ge=0, le=70, description="Years of employment")
-    annual_inc: float = Field(..., ge=0, description="Annual income in USD")
+    annual_inc: float = Field(..., ge=200000, description="Annual income in INR")
     dti: float = Field(..., ge=0, le=1, description="Debt-to-income ratio (0-1)")
     delinq_2yrs: int = Field(default=0, ge=0, description="Delinquencies in last 2 years")
     inq_last_6mths: int = Field(default=0, ge=0, description="Inquiries in last 6 months")
     open_acc: int = Field(default=5, ge=0, description="Number of open accounts")
     pub_rec: int = Field(default=0, ge=0, description="Number of public records")
-    revol_bal: float = Field(default=0, ge=0, description="Revolving balance in USD")
+    revol_bal: float = Field(default=0, ge=0, description="Revolving balance in INR")
     revol_util: float = Field(default=0.3, ge=0, le=1, description="Revolving utilization ratio")
     fico_avg: int = Field(..., ge=300, le=850, description="Average FICO score")
     grade_encoded: int = Field(..., ge=1, le=7, description="Loan grade (1-7)")
@@ -51,12 +51,12 @@ class LoanApplicationInput(BaseModel):
         populate_by_name=True,
         json_schema_extra={
             "example": {
-                "loan_amnt": 15000,
+                "loan_amnt": 500000,
                 "term": 60,
                 "int_rate": 12.5,
-                "installment": 300,
+                "installment": 10000,
                 "emp_length": 5,
-                "annual_inc": 75000,
+                "annual_inc": 750000,
                 "dti": 0.25,
                 "fico_avg": 690,
                 "grade_encoded": 3,
