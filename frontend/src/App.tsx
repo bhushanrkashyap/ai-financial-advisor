@@ -8,6 +8,8 @@ import { FinancialSummaryCard } from "./components/FinancialSummaryCard";
 import { ApprovalProbabilityGauge } from "./components/ApprovalProbabilityGauge";
 import { ImprovementRecommendations } from "./components/ImprovementRecommendations";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
+import { HousePricePrediction } from "./components/HousePricePrediction";
+import { PortfolioRecommendation } from "./components/PortfolioRecommendation";
 
 interface Prediction {
   prediction: string;
@@ -117,62 +119,76 @@ export function App() {
       <header className="header">
         <div className="header-inner">
           <div className="header-brand">
-            <h1>💰 Loan Eligibility Checker</h1>
-            <p>Check if you qualify for a loan in seconds</p>
+            <h1>🤖 AI Financial Advisor</h1>
+            <p>Intelligent predictions for loans, properties, and investments</p>
           </div>
           <SystemStatus />
         </div>
       </header>
 
       <div className="container">
-        <div className="content">
-          <div className="form-section">
-            <LoanForm onPredict={handlePredict} loading={loading} />
+        <div className="three-block-layout" style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+          gap: "2rem",
+          padding: "2rem 0"
+        }}>
+          {/* BLOCK 1: LOAN PREDICTION */}
+          <div style={{
+            backgroundColor: "#f8f9fa",
+            border: "3px solid #3498db",
+            borderRadius: "12px",
+            padding: "2rem",
+            boxShadow: "0 4px 12px rgba(52, 152, 219, 0.15)"
+          }}>
+            <h2 style={{
+              fontSize: "1.3rem",
+              marginBottom: "1rem",
+              color: "#2c3e50",
+              textAlign: "center",
+              fontWeight: 700
+            }}>💼 Loan Prediction</h2>
             
-            <button 
-              className="analytics-toggle"
-              onClick={() => setShowAnalytics(!showAnalytics)}
-              style={{
-                marginTop: "1rem",
-                padding: "0.75rem 1.5rem",
-                backgroundColor: showAnalytics ? "#2ecc71" : "#3498db",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "0.95rem",
-                fontWeight: 500,
-                transition: "all 0.3s ease",
-              }}
-            >
-              {showAnalytics ? "← Hide Analytics" : "📊 Show Analytics"}
-            </button>
-          </div>
+            <div className="form-section">
+              <LoanForm onPredict={handlePredict} loading={loading} />
+              
+              <button 
+                className="analytics-toggle"
+                onClick={() => setShowAnalytics(!showAnalytics)}
+                style={{
+                  marginTop: "1rem",
+                  width: "100%",
+                  padding: "0.75rem 1.5rem",
+                  backgroundColor: showAnalytics ? "#2ecc71" : "#3498db",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "0.95rem",
+                  fontWeight: 500,
+                  transition: "all 0.3s ease",
+                }}
+              >
+                {showAnalytics ? "← Hide Analytics" : "📊 Show Analytics"}
+              </button>
+            </div>
 
-          <div className="results-section">
-            {error && <div className="error">{error}</div>}
-            {loading && <div className="loading">Running model and financial analysis…</div>}
+            {/* Loan Prediction Results */}
+            {error && <div className="error" style={{ marginTop: "1rem" }}>{error}</div>}
+            {loading && <div className="loading" style={{ marginTop: "1rem" }}>Analyzing application…</div>}
             
             {prediction && (
-              <>
-                {/* Primary Prediction Results */}
+              <div style={{ marginTop: "1.5rem" }}>
                 <PredictionResults prediction={prediction} />
 
-                {/* Enhanced Financial Analysis Section */}
                 {financialData && (
-                  <div className="financial-analysis-section" style={{ marginTop: "2rem" }}>
-                    <h2 style={{ marginBottom: "1.5rem", fontSize: "1.3rem", fontWeight: 600 }}>
-                      💼 Financial Analysis
-                    </h2>
-
-                    {/* Approval Gauge */}
+                  <div className="financial-analysis-section" style={{ marginTop: "1.5rem" }}>
                     <ApprovalProbabilityGauge
                       approval_probability={financialData.approval_probability.approval_probability}
                       approval_category={financialData.approval_probability.approval_category}
                       confidence_score={prediction.confidence_score}
                     />
 
-                    {/* Financial Summary */}
                     <FinancialSummaryCard
                       monthly_emi={financialData.emi_calculation.monthly_emi}
                       total_interest={financialData.emi_calculation.total_interest}
@@ -184,23 +200,67 @@ export function App() {
                       emi_affordability={financialData.financial_health.emi_affordability}
                     />
 
-                    {/* Improvement Recommendations */}
                     {financialData.recommendations && financialData.recommendations.length > 0 && (
                       <ImprovementRecommendations recommendations={financialData.recommendations} />
                     )}
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             {!prediction && !loading && !error && (
-              <div className="card">
-                <h2>Results</h2>
-                <div className="no-results">
-                  Submit a loan application to see risk scores, financial analysis, approval probability, and recommendations.
-                </div>
+              <div style={{
+                marginTop: "1.5rem",
+                padding: "1rem",
+                backgroundColor: "#e8f4f8",
+                borderRadius: "8px",
+                textAlign: "center",
+                color: "#555",
+                fontSize: "0.9rem"
+              }}>
+                Submit a loan application to see predictions
               </div>
             )}
+          </div>
+
+          {/* BLOCK 2: HOUSE PRICE PREDICTION */}
+          <div style={{
+            backgroundColor: "#f8f9fa",
+            border: "3px solid #27ae60",
+            borderRadius: "12px",
+            padding: "2rem",
+            boxShadow: "0 4px 12px rgba(39, 174, 96, 0.15)",
+            maxHeight: "fit-content"
+          }}>
+            <h2 style={{
+              fontSize: "1.3rem",
+              marginBottom: "1rem",
+              color: "#2c3e50",
+              textAlign: "center",
+              fontWeight: 700
+            }}>🏠 House Price Prediction</h2>
+            
+            <HousePricePrediction />
+          </div>
+
+          {/* BLOCK 3: INVESTMENT & PORTFOLIO */}
+          <div style={{
+            backgroundColor: "#f8f9fa",
+            border: "3px solid #9b59b6",
+            borderRadius: "12px",
+            padding: "2rem",
+            boxShadow: "0 4px 12px rgba(155, 89, 182, 0.15)",
+            maxHeight: "fit-content"
+          }}>
+            <h2 style={{
+              fontSize: "1.3rem",
+              marginBottom: "1rem",
+              color: "#2c3e50",
+              textAlign: "center",
+              fontWeight: 700
+            }}>📊 Investment Portfolio</h2>
+            
+            <PortfolioRecommendation />
           </div>
         </div>
 

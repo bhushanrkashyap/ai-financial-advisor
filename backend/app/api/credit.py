@@ -15,10 +15,16 @@ from app.services.prediction import get_prediction_service
 from app.services.explainability import get_explainability_service
 from app.services.fairness import get_fairness_service
 from app.services.scenario_analysis import get_scenario_analysis_service
+from app.services.house_price_service import HousePriceService
+from app.services.market_risk_service import MarketRiskService
 
 logger = logging.getLogger(__name__)
 
 credit_router = APIRouter(prefix="/credit", tags=["credit"])
+
+# Initialize services
+house_price_service = HousePriceService()
+market_risk_service = MarketRiskService()
 
 
 @credit_router.post(
@@ -866,3 +872,336 @@ async def get_dashboard_summary() -> dict:
             status_code=500,
             detail="Failed to get dashboard summary",
         ) from e
+
+
+# ============= HOUSE PRICE PREDICTION ENDPOINTS =============
+
+
+@credit_router.post(
+    "/collateral/estimate-house-price",
+    summary="Estimate house price for collateral valuation",
+    description="Predicts residential property price using house features.",
+)
+async def estimate_house_price(house_features: dict) -> dict:
+    """Estimate house price for collateral valuation.
+
+    Parameters
+    ----------
+    house_features : dict
+        House features including:
+        - total_sqft: Total square feet
+        - bhk: Number of bedrooms
+        - bath: Number of bathrooms
+        - balcony: Number of balconies
+        - area_type_encoded: Encoded area type
+        - availability_encoded: Encoded availability
+        - location_encoded: Encoded location
+        - has_society: Whether property is in a society
+
+    Returns
+    -------
+    dict
+        House price prediction with confidence and uncertainty estimates
+    """
+    try:
+        if not house_price_service.is_loaded:
+            raise HTTPException(
+                status_code=503,
+                detail="House price model not loaded. Please try again later.",
+            )
+
+        result = house_price_service.predict_price(house_features, model_name='xgboost')
+
+        if result.get('status') == 'error':
+            raise HTTPException(
+                status_code=400,
+                detail=result.get('message', 'Prediction failed')
+            )
+
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"House price estimation error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"House price estimation failed: {str(e)}",
+        ) from e
+
+
+@credit_router.post(
+    "/collateral/ensemble-estimate",
+    summary="Ensemble house price estimation",
+    description="Predicts house price using ensemble of multiple models.",
+)
+async def ensemble_house_price_estimate(house_features: dict) -> dict:
+    """Ensemble house price estimation using multiple models.
+
+    Parameters
+    ----------
+    house_features : dict
+        House features
+
+    Returns
+    -------
+    dict
+        Ensemble prediction with individual model predictions and consensus score
+    """
+    try:
+        if not house_price_service.is_loaded:
+            raise HTTPException(
+                status_code=503,
+                detail="House price models not loaded.",
+            )
+
+        result = house_price_service.predict_ensemble(house_features)
+
+        if result.get('status') == 'error':
+            raise HTTPException(
+                status_code=400,
+                detail=result.get('message', 'Prediction failed')
+            )
+
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ensemble estimation error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ensemble estimation failed: {str(e)}",
+        ) from e
+
+
+@credit_router.get(
+    "/collateral/health",
+    summary="Health check for house price service",
+    description="Checks if the house price prediction service is ready.",
+)
+async def house_price_health_check() -> dict:
+    """Health check for house price service.
+
+    Returns
+    -------
+    dict
+        Health status and model availability
+    """
+    return house_price_service.health_check()
+
+
+# ============= MARKET RISK & PORTFOLIO ENDPOINTS =============
+
+
+@credit_router.get(
+    "/market/conditions",
+    summary="Get current market conditions",
+    description="Returns current market conditions, volatility, and risk indicators.",
+)
+async def get_market_conditions() -> dict:
+    """Get current market conditions and risk indicators.
+
+    Returns
+    -------
+    dict
+        Market conditions with volatility, trend, VIX equivalent, and stress index
+    """
+    try:
+        if not market_risk_service.is_loaded:
+            raise HTTPException(
+                status_code=503,
+                detail="Market data not available.",
+            )
+
+        conditions = market_risk_service.get_current_market_conditions()
+
+        if conditions.get('status') == 'error':
+            raise HTTPException(
+                status_code=500,
+                detail=conditions.get('message', 'Failed to get market conditions')
+            )
+
+        return conditions
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting market conditions: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get market conditions",
+        ) from e
+
+
+@credit_router.get(
+    "/market/sector-analysis",
+    summary="Get sector and stock analysis",
+    description="Returns sector/stock volatility and performance metrics.",
+)
+async def get_sector_analysis() -> dict:
+    """Get sector and stock analysis.
+
+    Returns
+    -------
+    dict
+        Sector volatility, performance, and market health score
+    """
+    try:
+        if not market_risk_service.is_loaded:
+            raise HTTPException(
+                status_code=503,
+                detail="Sector data not available.",
+            )
+
+        analysis = market_risk_service.get_sector_analysis()
+
+        if analysis.get('status') == 'error':
+            raise HTTPException(
+                status_code=500,
+                detail=analysis.get('message', 'Failed to get sector analysis')
+            )
+
+        return analysis
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting sector analysis: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to get sector analysis",
+        ) from e
+
+
+@credit_router.post(
+    "/portfolio/recommend",
+    summary="Get portfolio recommendation",
+    description="Recommends personalized portfolio allocation based on risk profile and income.",
+)
+async def recommend_portfolio(risk_level: str = "moderate", income: float = 500000) -> dict:
+    """Get personalized portfolio recommendation.
+
+    Parameters
+    ----------
+    risk_level : str
+        Risk level: 'conservative', 'moderate', or 'aggressive'
+    income : float
+        Annual income in INR
+
+    Returns
+    -------
+    dict
+        Portfolio allocation, investment amounts, and expected returns
+    """
+    try:
+        if not market_risk_service.is_loaded:
+            raise HTTPException(
+                status_code=503,
+                detail="Portfolio optimizer not available.",
+            )
+
+        if risk_level not in ['conservative', 'moderate', 'aggressive']:
+            raise HTTPException(
+                status_code=400,
+                detail="Risk level must be 'conservative', 'moderate', or 'aggressive'"
+            )
+
+        if income <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Income must be positive"
+            )
+
+        recommendation = market_risk_service.recommend_portfolio(risk_level, income)
+
+        if recommendation.get('status') == 'error':
+            raise HTTPException(
+                status_code=500,
+                detail=recommendation.get('message', 'Failed to generate recommendation')
+            )
+
+        return recommendation
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error recommending portfolio: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to recommend portfolio",
+        ) from e
+
+
+@credit_router.post(
+    "/market/loan-default-risk",
+    summary="Analyze market-adjusted loan default risk",
+    description="Analyzes loan default risk adjusted for current market conditions.",
+)
+async def analyze_loan_market_risk(market_conditions: dict = None, borrower_income: float = 500000) -> dict:
+    """Analyze loan default risk considering market conditions.
+
+    Parameters
+    ----------
+    market_conditions : dict, optional
+        Current market conditions. If None, uses latest market data.
+    borrower_income : float
+        Borrower's annual income in INR
+
+    Returns
+    -------
+    dict
+        Market-adjusted risk score and recommendations
+    """
+    try:
+        if not market_risk_service.is_loaded:
+            raise HTTPException(
+                status_code=503,
+                detail="Market data not available.",
+            )
+
+        # Get current market conditions if not provided
+        if market_conditions is None:
+            market_conditions = market_risk_service.get_current_market_conditions()
+            if market_conditions.get('status') == 'error':
+                raise HTTPException(
+                    status_code=500,
+                    detail="Failed to get market conditions"
+                )
+
+        risk_analysis = market_risk_service.analyze_loan_default_risk(
+            market_conditions, borrower_income
+        )
+
+        if risk_analysis.get('status') == 'error':
+            raise HTTPException(
+                status_code=500,
+                detail=risk_analysis.get('message', 'Failed to analyze risk')
+            )
+
+        return risk_analysis
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error analyzing loan market risk: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to analyze loan market risk",
+        ) from e
+
+
+@credit_router.get(
+    "/market/health",
+    summary="Health check for market service",
+    description="Checks if the market risk analysis service is ready.",
+)
+async def market_risk_health_check() -> dict:
+    """Health check for market risk service.
+
+    Returns
+    -------
+    dict
+        Health status and data availability
+    """
+    return market_risk_service.health_check()

@@ -166,5 +166,29 @@
     "risk_level": "LOW_RISK",
     "prediction": "SAFE",
     "approved": null
+  },
+  {
+    "timestamp": "2026-05-18T23:23:07.738668",
+    "loan_amount": 500000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.25,
+    "interest_rate": 12.5,
+    "default_probability": 0.24628440366131688,
+    "approval_probability": 84.15,
+    "risk_level": "LOW_RISK",
+    "prediction": "SAFE",
+    "approved": null
+  },
+  {
+    "timestamp": "2026-05-18T23:23:12.289287",
+    "loan_amount": 500000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.25,
+    "interest_rate": 12.5,
+    "default_probability": 0.24628440366131688,
+    "approval_probability": 84.15,
+    "risk_level": "LOW_RISK",
+    "prediction": "SAFE",
+    "approved": null
   }
 ]
