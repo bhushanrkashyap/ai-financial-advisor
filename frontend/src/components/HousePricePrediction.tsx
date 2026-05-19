@@ -76,7 +76,12 @@ export function HousePricePrediction() {
       });
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        let msg = `API error: ${response.status}`;
+        try {
+          const errBody = await response.json();
+          msg = errBody.detail || errBody.message || msg;
+        } catch (_) {}
+        throw new Error(msg);
       }
 
       const data = (await response.json()) as HousePricePrediction | EnsemblePrediction;
@@ -105,7 +110,7 @@ export function HousePricePrediction() {
 
   return (
     <div className="card" style={{ marginTop: "2rem" }}>
-      <h2>🏠 House Price Prediction</h2>
+      <h2>House Price Prediction</h2>
       <p style={{ color: "#666", marginBottom: "1.5rem" }}>
         Estimate property prices using advanced machine learning models
       </p>
@@ -261,9 +266,15 @@ export function HousePricePrediction() {
         </div>
       )}
 
+      {loading && !prediction && !ensemblePrediction && (
+        <div style={{ backgroundColor: "#f8f9fa", padding: "1rem", borderRadius: "8px", marginBottom: "1rem", color: "#555" }}>
+          Predicting price — this may take a moment. If external services are unavailable, a model-only estimate will be shown.
+        </div>
+      )}
+
       {prediction && !ensemblePrediction && (
-        <div style={{ backgroundColor: "#f0f8ff", padding: "1.5rem", borderRadius: "8px", border: "2px solid #3498db" }}>
-          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>📊 Price Prediction</h3>
+        <div style={{ backgroundColor: "transparent", padding: "1.5rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
+          <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Price Prediction</h3>
           <div
             style={{
               display: "grid",
@@ -298,8 +309,8 @@ export function HousePricePrediction() {
       )}
 
       {ensemblePrediction && (
-        <div style={{ backgroundColor: "#f0fff0", padding: "1.5rem", borderRadius: "8px", border: "2px solid #27ae60" }}>
-          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>🎯 Ensemble Prediction (3 Models)</h3>
+        <div style={{ backgroundColor: "transparent", padding: "1.5rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
+          <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Ensemble Prediction (3 Models)</h3>
           <div
             style={{
               display: "grid",

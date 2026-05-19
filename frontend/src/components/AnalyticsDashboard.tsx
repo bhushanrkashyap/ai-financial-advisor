@@ -109,52 +109,52 @@ export function AnalyticsDashboard() {
       transition={{ duration: 0.5 }}
     >
       <div className="card-header">
-        <h3>📈 Analytics Dashboard</h3>
+        <h3>Analytics Dashboard</h3>
         <button
           className="refresh-btn"
           onClick={fetchDashboardData}
           title="Refresh data"
         >
-          🔄
+          Refresh
         </button>
       </div>
 
       {/* 24-Hour Metrics */}
       <div className="dashboard-section">
         <h4 className="section-title">Last 24 Hours</h4>
-        <div className="metrics-grid">
+          <div className="metrics-grid">
           <div className="metric-card">
-            <span className="metric-icon">📊</span>
+            <span className="metric-icon" />
             <span className="metric-label">Applications</span>
             <span className="metric-value">{dashboardData.metrics_24h.total_applications}</span>
           </div>
 
           <div className="metric-card">
-            <span className="metric-icon">✓</span>
+            <span className="metric-icon" />
             <span className="metric-label">Approval Rate</span>
             <span className="metric-value">{dashboardData.metrics_24h.approval_rate}</span>
           </div>
 
           <div className="metric-card">
-            <span className="metric-icon">💰</span>
+            <span className="metric-icon" />
             <span className="metric-label">Avg Loan</span>
             <span className="metric-value">{dashboardData.metrics_24h.average_loan}</span>
           </div>
 
           <div className="metric-card">
-            <span className="metric-icon">📈</span>
+            <span className="metric-icon" />
             <span className="metric-label">Avg FICO</span>
             <span className="metric-value">{dashboardData.metrics_24h.average_fico}</span>
           </div>
 
           <div className="metric-card">
-            <span className="metric-icon">💳</span>
+            <span className="metric-icon" />
             <span className="metric-label">Avg DTI</span>
             <span className="metric-value">{dashboardData.metrics_24h.average_dti}</span>
           </div>
 
           <div className="metric-card">
-            <span className="metric-icon">🎯</span>
+            <span className="metric-icon" />
             <span className="metric-label">Avg Approval Prob</span>
             <span className="metric-value">{dashboardData.metrics_24h.average_approval_probability}</span>
           </div>
@@ -192,7 +192,7 @@ export function AnalyticsDashboard() {
         <h4 className="section-title">Risk Distribution (24h)</h4>
         <div className="risk-distribution">
           <div className="risk-item">
-            <span className="risk-label">🟢 Low Risk</span>
+            <span className="risk-label">Low Risk</span>
             <div className="risk-bar">
               <div className="risk-fill" style={{ width: dashboardData.risk_distribution.low, backgroundColor: "#2ecc71" }} />
             </div>
@@ -200,7 +200,7 @@ export function AnalyticsDashboard() {
           </div>
 
           <div className="risk-item">
-            <span className="risk-label">🟡 Medium Risk</span>
+            <span className="risk-label">Medium Risk</span>
             <div className="risk-bar">
               <div className="risk-fill" style={{ width: dashboardData.risk_distribution.medium, backgroundColor: "#f39c12" }} />
             </div>
@@ -208,7 +208,7 @@ export function AnalyticsDashboard() {
           </div>
 
           <div className="risk-item">
-            <span className="risk-label">🔴 High Risk</span>
+            <span className="risk-label">High Risk</span>
             <div className="risk-bar">
               <div className="risk-fill" style={{ width: dashboardData.risk_distribution.high, backgroundColor: "#e74c3c" }} />
             </div>

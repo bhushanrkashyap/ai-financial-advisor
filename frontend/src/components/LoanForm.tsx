@@ -8,10 +8,10 @@ interface LoanFormProps {
 
 // Loan type configurations with min/max amounts in INR
 const LOAN_TYPES = {
-  HOME: { label: "🏠 Home Loan", minAmount: 500000, maxAmount: 50000000, defaultTerm: 240 },
-  VEHICLE: { label: "🚗 Vehicle Loan", minAmount: 200000, maxAmount: 5000000, defaultTerm: 60 },
-  PERSONAL: { label: "💳 Personal Loan", minAmount: 50000, maxAmount: 1000000, defaultTerm: 36 },
-  EDUCATION: { label: "🎓 Education Loan", minAmount: 100000, maxAmount: 10000000, defaultTerm: 120 },
+  HOME: { label: "Home Loan", minAmount: 500000, maxAmount: 50000000, defaultTerm: 240 },
+  VEHICLE: { label: "Vehicle Loan", minAmount: 200000, maxAmount: 5000000, defaultTerm: 60 },
+  PERSONAL: { label: "Personal Loan", minAmount: 50000, maxAmount: 1000000, defaultTerm: 36 },
+  EDUCATION: { label: "Education Loan", minAmount: 100000, maxAmount: 10000000, defaultTerm: 120 },
 };
 
 export function LoanForm({ onPredict, loading }: LoanFormProps) {
@@ -76,16 +76,16 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
     const income = formData.annual_inc;
     const loan = formData.loan_amnt;
 
-    const warnings: string[] = [];
-    if (fico < 500) warnings.push("⚠️ FICO score under 500 (critical risk)");
-    if (dti > 0.5) warnings.push("⚠️ Debt-to-Income above 50%");
-    if (delinq > 3) warnings.push("⚠️ More than 3 late payments in 2 years");
-    if (income < 250000 && loan > 2000000) warnings.push("⚠️ Income may be insufficient for this loan");
-    if (fico < 600 && dti > 0.4) warnings.push("⚠️ Weak credit with high debt ratio");
+      const warnings: string[] = [];
+      if (fico < 500) warnings.push("FICO score under 500 (critical risk)");
+      if (dti > 0.5) warnings.push("Debt-to-Income above 50%");
+      if (delinq > 3) warnings.push("More than 3 late payments in 2 years");
+      if (income < 250000 && loan > 2000000) warnings.push("Income may be insufficient for this loan");
+      if (fico < 600 && dti > 0.4) warnings.push("Weak credit with high debt ratio");
 
     if (warnings.length > 0) {
       const msg = warnings.join("\n");
-      if (!confirm(`Risk Warnings:\n\n${msg}\n\n✓ Continue?`)) {
+      if (!confirm(`Risk Warnings:\n\n${msg}\n\nContinue?`)) {
         return;
       }
     }
@@ -95,7 +95,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
 
   return (
     <div className="card form-card">
-      <h2>💰 Loan Application</h2>
+      <h2>Loan Application</h2>
       <form onSubmit={handleSubmit} className="loan-form">
         {/* Loan Type Selection */}
         <div className="form-row">
@@ -115,7 +115,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="annual_inc">
-              💼 Annual Salary
+              Annual Salary
               <span style={{ fontSize: "0.85rem", color: "#7f8c8d", marginLeft: "0.5rem" }}>
                 (₹ {(formData.annual_inc as number).toLocaleString("en-IN")})
               </span>
@@ -134,7 +134,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
           </div>
           <div className="form-group">
             <label htmlFor="fico_avg">
-              📊 FICO Score
+              FICO Score
               <span style={{ fontSize: "0.85rem", color: "#7f8c8d", marginLeft: "0.5rem" }}>
                 ({formData.fico_avg})
               </span>
@@ -156,7 +156,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
         <div className="form-row">
           <div className="form-group form-group-full">
             <label htmlFor="loan_amnt">
-              💳 Loan Amount
+              Loan Amount
               <span style={{ fontSize: "0.85rem", color: "#7f8c8d", marginLeft: "0.5rem" }}>
                 (₹ {(formData.loan_amnt as number).toLocaleString("en-IN")})
               </span>
@@ -193,7 +193,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
         {/* Term & Interest Rate */}
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="term">⏱️ Loan Duration</label>
+            <label htmlFor="term">Loan Duration</label>
             <input
               type="number"
               id="term"
@@ -208,7 +208,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
             <small style={{ color: "#7f8c8d" }}>{formData.term} months = {(formData.term / 12).toFixed(1)} years</small>
           </div>
           <div className="form-group">
-            <label htmlFor="int_rate">📈 Interest Rate (%)</label>
+            <label htmlFor="int_rate">Interest Rate (%)</label>
             <input
               type="number"
               id="int_rate"
@@ -224,8 +224,8 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
         </div>
 
         {/* Additional Details (Collapsible) */}
-        <details style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "#f8f9fa", borderRadius: "8px", cursor: "pointer" }}>
-          <summary style={{ fontWeight: 600, color: "#2c3e50", marginBottom: "1rem" }}>📋 Additional Details</summary>
+        <details style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "var(--surface-elevated)", borderRadius: "8px", cursor: "pointer" }}>
+          <summary style={{ fontWeight: 600, color: "var(--text)", marginBottom: "1rem" }}>Additional Details</summary>
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="dti">Debt-to-Income Ratio</label>
@@ -276,7 +276,7 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
         </details>
 
         <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? "⏳ Checking your eligibility..." : "✓ Check Loan Eligibility"}
+           {loading ? "Checking eligibility..." : "Check Loan Eligibility"}
         </button>
       </form>
     </div>

@@ -37,32 +37,32 @@ export function ImprovementRecommendations({
   const getPriorityIcon = (priority: string): string => {
     switch (priority) {
       case "CRITICAL":
-        return "🔴";
+        return "";
       case "HIGH":
-        return "🟠";
+        return "";
       case "MEDIUM":
-        return "🟡";
+        return "";
       case "LOW":
-        return "🔵";
+        return "";
       default:
-        return "⚪";
+        return "";
     }
   };
 
   const getCategoryIcon = (category: string): string => {
     switch (category) {
       case "CREDIT_SCORE":
-        return "📈";
+        return "";
       case "DEBT_TO_INCOME":
-        return "💳";
+        return "";
       case "PAYMENT_HISTORY":
-        return "✓";
+        return "";
       case "EMPLOYMENT":
-        return "💼";
+        return "";
       case "OVERALL_RISK":
-        return "⚠️";
+        return "";
       default:
-        return "•";
+        return "";
     }
   };
 
@@ -92,10 +92,10 @@ export function ImprovementRecommendations({
         transition={{ duration: 0.5 }}
       >
         <div className="card-header">
-          <h3>💡 Improvement Recommendations</h3>
+          <h3>Improvement Recommendations</h3>
         </div>
         <div className="no-recommendations">
-          <span>✓ Your application looks great! No improvements needed at this time.</span>
+          <span>Your application looks great! No improvements needed at this time.</span>
         </div>
       </motion.div>
     );
@@ -112,7 +112,7 @@ export function ImprovementRecommendations({
       transition={{ duration: 0.5 }}
     >
       <div className="card-header">
-        <h3>💡 Improvement Recommendations</h3>
+        <h3>Improvement Recommendations</h3>
         {(criticalCount > 0 || highCount > 0) && (
           <span className="recommendation-badge">
             {criticalCount} Critical, {highCount} High Priority

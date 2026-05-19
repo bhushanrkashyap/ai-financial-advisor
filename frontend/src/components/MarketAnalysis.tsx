@@ -96,7 +96,7 @@ export function MarketAnalysis() {
 
   return (
     <div className="card" style={{ marginTop: "2rem" }}>
-      <h2>📈 Market Analysis & Stock Price Insights</h2>
+      <h2>Market Analysis & Stock Price Insights</h2>
       <p style={{ color: "#666", marginBottom: "1.5rem" }}>
         Real-time market conditions, sector analysis, and market-adjusted loan risk
       </p>
@@ -116,7 +116,7 @@ export function MarketAnalysis() {
           fontWeight: 500,
         }}
       >
-        {loading ? "Loading..." : "🔄 Refresh Market Data"}
+        {loading ? "Loading..." : "Refresh Market Data"}
       </button>
 
       {error && (
@@ -128,7 +128,7 @@ export function MarketAnalysis() {
       {/* Market Conditions */}
       {marketConditions && (
         <div style={{ backgroundColor: "#f0f8ff", padding: "1.5rem", borderRadius: "8px", marginBottom: "1.5rem" }}>
-          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>🌍 Current Market Conditions</h3>
+          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>Current Market Conditions</h3>
           <div
             style={{
               display: "grid",
@@ -185,7 +185,7 @@ export function MarketAnalysis() {
       {/* Sector Analysis */}
       {sectorAnalysis && (
         <div style={{ backgroundColor: "#fff0f5", padding: "1.5rem", borderRadius: "8px", marginBottom: "1.5rem" }}>
-          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>📊 Sector Performance & Stock Analysis</h3>
+          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>Sector Performance & Stock Analysis</h3>
           <div
             style={{
               display: "grid",
@@ -227,8 +227,8 @@ export function MarketAnalysis() {
                 <div key={sector.symbol} style={{ backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "6px" }}>
                   <p style={{ fontSize: "0.9rem", fontWeight: 600, marginBottom: "0.5rem" }}>{sector.symbol}</p>
                   <div style={{ fontSize: "0.85rem", color: "#666", lineHeight: "1.6" }}>
-                    <p>📈 Return: {(sector.latest_return * 100).toFixed(2)}%</p>
-                    <p>📊 Vol: {(sector.volatility_30d * 100).toFixed(2)}%</p>
+                    <p>Return: {(sector.latest_return * 100).toFixed(2)}%</p>
+                    <p>Volatility: {(sector.volatility_30d * 100).toFixed(2)}%</p>
                     <p>Momentum: {(sector.momentum_30d * 100).toFixed(2)}%</p>
                   </div>
                 </div>
@@ -241,7 +241,7 @@ export function MarketAnalysis() {
       {/* Loan Default Risk */}
       {loanRisk && (
         <div style={{ backgroundColor: "#f0fff0", padding: "1.5rem", borderRadius: "8px" }}>
-          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>⚠️ Market-Adjusted Loan Risk</h3>
+          <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>Market-Adjusted Loan Risk</h3>
           <div
             style={{
               display: "grid",

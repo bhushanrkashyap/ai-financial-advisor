@@ -159,9 +159,19 @@ class CreditDefaultPredictionService:
             logger.debug("risk=%s confidence=%.4f", risk_level, confidence)
 
         # Get recommendation from Java engine
-        recommendation = self._get_java_recommendation(
-            input_data, prob_default, risk_level
-        )
+        # Get recommendation from Java engine if enabled; otherwise use fallback
+        if getattr(settings, "java_engine_enabled", True):
+            recommendation = self._get_java_recommendation(
+                input_data, prob_default, risk_level
+            )
+        else:
+            # Use the same fallback text as _get_java_recommendation would produce
+            if risk_level == "LOW_RISK":
+                recommendation = "✓ Loan approved. Low risk of default."
+            elif risk_level == "MEDIUM_RISK":
+                recommendation = "⚠ Loan requires review. Consider additional documentation or collateral."
+            else:
+                recommendation = "✗ Loan not recommended. High risk of default."
 
         result = {
             "prediction": "DEFAULT_RISK" if pred == 1 else "SAFE",

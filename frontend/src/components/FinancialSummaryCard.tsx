@@ -78,7 +78,7 @@ export function FinancialSummaryCard({
       transition={{ duration: 0.5 }}
     >
       <div className="card-header">
-        <h3>💰 Financial Summary</h3>
+        <h3>Financial Summary</h3>
         <button
           className="expand-btn"
           onClick={() => setIsExpanded(!isExpanded)}

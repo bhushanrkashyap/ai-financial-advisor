@@ -40,7 +40,7 @@ export function ScenarioAnalysis({ onAnalyzeScenarios }: ScenarioProps) {
 
   return (
     <div className="card">
-      <h2>🎯 What-If Scenario Analysis</h2>
+      <h2>What-If Scenario Analysis</h2>
 
       <div className="result-group">
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
@@ -65,7 +65,7 @@ export function ScenarioAnalysis({ onAnalyzeScenarios }: ScenarioProps) {
 
         {error && (
           <div style={{ color: "red", marginTop: "1rem" }}>
-            ⚠️ {error}
+            {error}
           </div>
         )}
 
@@ -73,7 +73,7 @@ export function ScenarioAnalysis({ onAnalyzeScenarios }: ScenarioProps) {
           <div style={{ marginTop: "1.5rem" }}>
             {/* Current Status */}
             <div className="result-group">
-              <h3>📊 Current Status</h3>
+              <h3>Current Status</h3>
 
               <div
                 style={{
@@ -97,13 +97,13 @@ export function ScenarioAnalysis({ onAnalyzeScenarios }: ScenarioProps) {
 
             {/* Best Path to Approval */}
             {scenarios.scenarios?.best_path_to_approval && (
-              <div className="result-group">
-                <h3>🚀 Best Path to Approval</h3>
+                <div className="result-group">
+                <h3>Best Path to Approval</h3>
 
                 {scenarios.scenarios.best_path_to_approval.quick_wins?.length > 0 && (
                   <div style={{ marginBottom: "1rem" }}>
                     <h4 style={{ margin: "0 0 0.75rem 0", color: "#2ecc71", fontSize: "0.95rem" }}>
-                      ✓ Quick Wins (Easiest)
+                      Quick Wins (Easiest)
                     </h4>
                     {scenarios.scenarios.best_path_to_approval.quick_wins.map((win: any, idx: number) => (
                       <div
@@ -128,7 +128,7 @@ export function ScenarioAnalysis({ onAnalyzeScenarios }: ScenarioProps) {
                 {scenarios.scenarios.best_path_to_approval.medium_term?.length > 0 && (
                   <div style={{ marginBottom: "1rem" }}>
                     <h4 style={{ margin: "0 0 0.75rem 0", color: "#f39c12", fontSize: "0.95rem" }}>
-                      ⚡ Medium Term (3-6 months)
+                      Medium Term (3-6 months)
                     </h4>
                     {scenarios.scenarios.best_path_to_approval.medium_term.map((term: any, idx: number) => (
                       <div
@@ -161,7 +161,7 @@ export function ScenarioAnalysis({ onAnalyzeScenarios }: ScenarioProps) {
 
             {/* All Scenarios */}
             <div className="result-group">
-              <h3>📈 Detailed Scenarios</h3>
+              <h3>Detailed Scenarios</h3>
 
               {["improve_fico", "reduce_dti", "increase_income", "reduce_loan", "reduce_delinquency"].map(
                 (scenarioType) => {

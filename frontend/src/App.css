@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-page);
+  font-family: var(--font-sans);
+  color: var(--text);
 }
 
 .header {
@@ -146,11 +148,12 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 640px) {
   .content {
     grid-template-columns: 1fr;
   }
 
+  /* Only stack header on very small screens to keep status badges horizontal */
   .header-inner {
     flex-direction: column;
     align-items: stretch;

@@ -86,7 +86,7 @@ export function ApprovalProbabilityGauge({
       transition={{ duration: 0.5 }}
     >
       <div className="card-header">
-        <h3>📊 Approval Probability</h3>
+        <h3>Approval Probability</h3>
       </div>
 
       <div className="gauge-container">

@@ -156,7 +156,7 @@ export function PredictionResults({ prediction }: PredictionResultsProps) {
 
       {/* Visualizations Section */}
       <div className="result-group">
-        <h3>📊 Risk Visualizations</h3>
+        <h3>Risk Visualizations</h3>
         
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
           {/* Gauge Chart */}

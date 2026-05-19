@@ -10,6 +10,9 @@ class Settings(BaseSettings):
 
     java_engine_url: str = "http://localhost:8081/api/engine/recommend"
     java_engine_timeout_seconds: float = 5.0
+    # Toggle calling the external Java recommendation engine. Set to false to
+    # force model-only behavior and use internal fallback recommendations.
+    java_engine_enabled: bool = True
     prediction_verbose_logs: bool = False
 
 

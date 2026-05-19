@@ -27,9 +27,9 @@ export function PortfolioRecommendation() {
     setPortfolio(null);
 
     try {
-      const monthlyIncome = annualIncome / 12;
+      // Send annual income (backend expects annual income in INR)
       const response = await fetch(
-        `${API_BASE}/api/credit/portfolio/recommend?risk_level=${riskLevel}&income=${monthlyIncome}`,
+        `${API_BASE}/api/credit/portfolio/recommend?risk_level=${riskLevel}&income=${annualIncome}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -37,7 +37,13 @@ export function PortfolioRecommendation() {
       );
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        // try to parse error body for friendlier message
+        let msg = `API error: ${response.status}`;
+        try {
+          const errBody = await response.json();
+          msg = errBody.detail || errBody.message || msg;
+        } catch (_) {}
+        throw new Error(msg);
       }
 
       const data = (await response.json()) as Portfolio;
@@ -77,7 +83,7 @@ export function PortfolioRecommendation() {
 
   return (
     <div className="card" style={{ marginTop: "2rem" }}>
-      <h2>💼 Portfolio Optimization & Allocation</h2>
+      <h2>Portfolio Optimization & Allocation</h2>
       <p style={{ color: "#666", marginBottom: "1.5rem" }}>
         Get personalized investment allocation using Modern Portfolio Theory
       </p>
@@ -180,7 +186,7 @@ export function PortfolioRecommendation() {
               marginBottom: "1.5rem",
             }}
           >
-            <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>📊 Portfolio Performance Metrics</h3>
+            <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Portfolio Performance Metrics</h3>
             <div
               style={{
                 display: "grid",
@@ -218,7 +224,7 @@ export function PortfolioRecommendation() {
               marginBottom: "1.5rem",
             }}
           >
-            <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>🎯 Recommended Asset Allocation</h3>
+            <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Recommended Asset Allocation</h3>
             <div
               style={{
                 display: "grid",
@@ -278,7 +284,7 @@ export function PortfolioRecommendation() {
               borderLeft: "4px solid #3498db",
             }}
           >
-            <h3 style={{ marginBottom: "1rem", color: "#2c3e50" }}>💰 Investment Summary</h3>
+            <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Investment Summary</h3>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               <div>
                 <p style={{ color: "#666", marginBottom: "0.25rem" }}>Monthly Investment</p>

@@ -29,7 +29,7 @@ export function ExplainabilityPanel({ prediction, onExplain }: ExplanationProps)
 
   return (
     <div className="card">
-      <h2>🔍 Model Explainability (SHAP)</h2>
+      <h2>Model Explainability (SHAP)</h2>
       
       <div className="result-group">
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
@@ -54,14 +54,14 @@ export function ExplainabilityPanel({ prediction, onExplain }: ExplanationProps)
 
         {error && (
           <div style={{ color: "red", marginTop: "1rem" }}>
-            ⚠️ {error}
+            {error}
           </div>
         )}
 
         {explanation && (
           <div style={{ marginTop: "1.5rem" }}>
             <div className="result-group">
-              <h3>🎯 Top Factors</h3>
+              <h3>Top Factors</h3>
 
               {explanation.explanation?.top_features?.map(
                 (feature: any, idx: number) => (
@@ -90,7 +90,7 @@ export function ExplainabilityPanel({ prediction, onExplain }: ExplanationProps)
             </div>
 
             <div className="result-group">
-              <h3>📊 Summary</h3>
+              <h3>Summary</h3>
               <p style={{ whiteSpace: "pre-wrap", fontSize: "0.9rem" }}>
                 {explanation.explanation?.summary}
               </p>

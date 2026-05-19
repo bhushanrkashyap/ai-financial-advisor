@@ -91,21 +91,26 @@ export function App() {
       const result = (await predResponse.json()) as Prediction;
       setPrediction(result);
 
-      // Then, get the enhanced financial summary
-      try {
-        const financialResponse = await fetch(`${API_BASE}/api/credit/financial-summary`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
+      // Optionally get the enhanced financial summary — disabled by default to
+      // ensure the UI shows model-only responses and avoids downstream 503s.
+      // Enable by setting VITE_ENABLE_FINANCIAL_SUMMARY=true in the Vite env.
+      const enableFinancial = import.meta.env.VITE_ENABLE_FINANCIAL_SUMMARY === "true";
+      if (enableFinancial) {
+        try {
+          const financialResponse = await fetch(`${API_BASE}/api/credit/financial-summary`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
 
-        if (financialResponse.ok) {
-          const financialResult = (await financialResponse.json()) as FinancialData;
-          setFinancialData(financialResult);
+          if (financialResponse.ok) {
+            const financialResult = (await financialResponse.json()) as FinancialData;
+            setFinancialData(financialResult);
+          }
+        } catch (err) {
+          // If financial summary fails, continue with just prediction
+          console.warn("Failed to fetch financial summary:", err);
         }
-      } catch (err) {
-        // If financial summary fails, continue with just prediction
-        console.warn("Failed to fetch financial summary:", err);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -119,7 +124,7 @@ export function App() {
       <header className="header">
         <div className="header-inner">
           <div className="header-brand">
-            <h1>🤖 AI Financial Advisor</h1>
+            <h1>AI Financial Advisor</h1>
             <p>Intelligent predictions for loans, properties, and investments</p>
           </div>
           <SystemStatus />
@@ -135,19 +140,18 @@ export function App() {
         }}>
           {/* BLOCK 1: LOAN PREDICTION */}
           <div style={{
-            backgroundColor: "#f8f9fa",
-            border: "3px solid #3498db",
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
-            padding: "2rem",
-            boxShadow: "0 4px 12px rgba(52, 152, 219, 0.15)"
+            padding: "1.5rem"
           }}>
             <h2 style={{
-              fontSize: "1.3rem",
-              marginBottom: "1rem",
-              color: "#2c3e50",
-              textAlign: "center",
+              fontSize: "1.05rem",
+              marginBottom: "0.75rem",
+              color: "var(--text)",
+              textAlign: "left",
               fontWeight: 700
-            }}>💼 Loan Prediction</h2>
+            }}>Loan Prediction</h2>
             
             <div className="form-section">
               <LoanForm onPredict={handlePredict} loading={loading} />
@@ -159,8 +163,8 @@ export function App() {
                   marginTop: "1rem",
                   width: "100%",
                   padding: "0.75rem 1.5rem",
-                  backgroundColor: showAnalytics ? "#2ecc71" : "#3498db",
-                  color: "#fff",
+                  backgroundColor: showAnalytics ? "var(--success)" : "var(--accent)",
+                  color: "#061221",
                   border: "none",
                   borderRadius: "8px",
                   cursor: "pointer",
@@ -169,7 +173,7 @@ export function App() {
                   transition: "all 0.3s ease",
                 }}
               >
-                {showAnalytics ? "← Hide Analytics" : "📊 Show Analytics"}
+                {showAnalytics ? "Hide Analytics" : "Show Analytics"}
               </button>
             </div>
 
@@ -225,40 +229,38 @@ export function App() {
 
           {/* BLOCK 2: HOUSE PRICE PREDICTION */}
           <div style={{
-            backgroundColor: "#f8f9fa",
-            border: "3px solid #27ae60",
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
-            padding: "2rem",
-            boxShadow: "0 4px 12px rgba(39, 174, 96, 0.15)",
+            padding: "1.5rem",
             maxHeight: "fit-content"
           }}>
             <h2 style={{
-              fontSize: "1.3rem",
-              marginBottom: "1rem",
-              color: "#2c3e50",
-              textAlign: "center",
+              fontSize: "1.05rem",
+              marginBottom: "0.75rem",
+              color: "var(--text)",
+              textAlign: "left",
               fontWeight: 700
-            }}>🏠 House Price Prediction</h2>
+            }}>House Price Prediction</h2>
             
             <HousePricePrediction />
           </div>
 
           {/* BLOCK 3: INVESTMENT & PORTFOLIO */}
           <div style={{
-            backgroundColor: "#f8f9fa",
-            border: "3px solid #9b59b6",
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
-            padding: "2rem",
-            boxShadow: "0 4px 12px rgba(155, 89, 182, 0.15)",
+            padding: "1.5rem",
             maxHeight: "fit-content"
           }}>
             <h2 style={{
-              fontSize: "1.3rem",
-              marginBottom: "1rem",
-              color: "#2c3e50",
-              textAlign: "center",
+              fontSize: "1.05rem",
+              marginBottom: "0.75rem",
+              color: "var(--text)",
+              textAlign: "left",
               fontWeight: 700
-            }}>📊 Investment Portfolio</h2>
+            }}>Investment Portfolio</h2>
             
             <PortfolioRecommendation />
           </div>

@@ -55,7 +55,7 @@ export function FairnessAnalysis({ onAnalyzeFairness }: FairnessProps) {
 
   return (
     <div className="card">
-      <h2>⚖️ Fairness & Bias Analysis</h2>
+      <h2>Fairness & Bias Analysis</h2>
 
       <div className="result-group">
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
@@ -80,7 +80,7 @@ export function FairnessAnalysis({ onAnalyzeFairness }: FairnessProps) {
 
         {error && (
           <div style={{ color: "red", marginTop: "1rem" }}>
-            ⚠️ {error}
+            {error}
           </div>
         )}
 
@@ -88,7 +88,7 @@ export function FairnessAnalysis({ onAnalyzeFairness }: FairnessProps) {
           <div style={{ marginTop: "1.5rem" }}>
             {/* Bias Score */}
             <div className="result-group">
-              <h3>📊 Bias Assessment</h3>
+              <h3>Bias Assessment</h3>
 
               <div
                 style={{
@@ -115,7 +115,7 @@ export function FairnessAnalysis({ onAnalyzeFairness }: FairnessProps) {
 
             {/* Discrimination Risk */}
             <div className="result-group">
-              <h3>⚠️ Discrimination Risk</h3>
+              <h3>Discrimination Risk</h3>
 
               <div
                 style={{
@@ -135,8 +135,8 @@ export function FairnessAnalysis({ onAnalyzeFairness }: FairnessProps) {
                   <ul style={{ margin: "0.5rem 0", paddingLeft: "1.5rem" }}>
                     {Object.entries(fairness.fairness_analysis.fairness_checks).map(([key, value]: [string, any]) => (
                       <li key={key} style={{ marginBottom: "0.25rem", color: value ? "#e74c3c" : "#2ecc71" }}>
-                        {key.replace(/_/g, " ")}: {value ? "⚠️ Flag" : "✓ Pass"}
-                      </li>
+                          {key.replace(/_/g, " ")}: {value ? "Flag" : "Pass"}
+                        </li>
                     ))}
                   </ul>
                 )}
