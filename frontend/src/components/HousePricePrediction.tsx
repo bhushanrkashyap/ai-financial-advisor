@@ -110,21 +110,14 @@ export function HousePricePrediction() {
 
   return (
     <div className="card" style={{ marginTop: "2rem" }}>
-      <h2>House Price Prediction</h2>
-      <p style={{ color: "#666", marginBottom: "1.5rem" }}>
+      <h2>🏠 House Price Prediction</h2>
+      <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem", fontSize: "0.95rem" }}>
         Estimate property prices using advanced machine learning models
       </p>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div>
-          <label>Total Sqft</label>
+      <div className="form-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1.2rem", marginBottom: "1.5rem" }}>
+        <div className="form-group">
+          <label>📐 Total Sqft</label>
           <input
             type="number"
             name="total_sqft"
@@ -133,8 +126,8 @@ export function HousePricePrediction() {
             placeholder="1500"
           />
         </div>
-        <div>
-          <label>BHK</label>
+        <div className="form-group">
+          <label>🏢 BHK</label>
           <input
             type="number"
             name="bhk"
@@ -143,8 +136,8 @@ export function HousePricePrediction() {
             placeholder="3"
           />
         </div>
-        <div>
-          <label>Bathrooms</label>
+        <div className="form-group">
+          <label>🚿 Bathrooms</label>
           <input
             type="number"
             name="bath"
@@ -153,8 +146,8 @@ export function HousePricePrediction() {
             placeholder="2"
           />
         </div>
-        <div>
-          <label>Balcony</label>
+        <div className="form-group">
+          <label>🌳 Balcony</label>
           <input
             type="number"
             name="balcony"
@@ -163,8 +156,8 @@ export function HousePricePrediction() {
             placeholder="1"
           />
         </div>
-        <div>
-          <label>Price per Sqft (₹)</label>
+        <div className="form-group">
+          <label>💰 Price per Sqft (₹)</label>
           <input
             type="number"
             name="price_per_sqft"
@@ -173,8 +166,8 @@ export function HousePricePrediction() {
             placeholder="45000"
           />
         </div>
-        <div>
-          <label>Area Type (0-2)</label>
+        <div className="form-group">
+          <label>🏘️ Area Type (0-2)</label>
           <input
             type="number"
             name="area_type_encoded"
@@ -184,8 +177,8 @@ export function HousePricePrediction() {
             max="2"
           />
         </div>
-        <div>
-          <label>Availability (0-3)</label>
+        <div className="form-group">
+          <label>📅 Availability (0-3)</label>
           <input
             type="number"
             name="availability_encoded"
@@ -195,8 +188,8 @@ export function HousePricePrediction() {
             max="3"
           />
         </div>
-        <div>
-          <label>Location (0-10)</label>
+        <div className="form-group">
+          <label>📍 Location (0-10)</label>
           <input
             type="number"
             name="location_encoded"
@@ -206,8 +199,8 @@ export function HousePricePrediction() {
             max="10"
           />
         </div>
-        <div>
-          <label>Has Society (0-1)</label>
+        <div className="form-group">
+          <label>🏘️ Has Society (0-1)</label>
           <input
             type="number"
             name="has_society"
@@ -219,23 +212,14 @@ export function HousePricePrediction() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
         <button
           onClick={() => predictPrice(false)}
           disabled={loading}
-          style={{
-            padding: "0.75rem 1.5rem",
-            backgroundColor: "#3498db",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.6 : 1,
-            fontSize: "0.95rem",
-            fontWeight: 500,
-          }}
+          className="submit-btn"
+          style={{ flex: "1 1 auto", minWidth: "150px" }}
         >
-          {loading && useEnsemble === false ? "Predicting..." : "Predict Price"}
+          {loading && useEnsemble === false ? "Predicting..." : "💡 Predict Price"}
         </button>
 
         <button
@@ -244,106 +228,89 @@ export function HousePricePrediction() {
             predictPrice(true);
           }}
           disabled={loading}
-          style={{
-            padding: "0.75rem 1.5rem",
-            backgroundColor: "#27ae60",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.6 : 1,
-            fontSize: "0.95rem",
-            fontWeight: 500,
+          className="submit-btn"
+          style={{ 
+            flex: "1 1 auto",
+            minWidth: "150px",
+            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            boxShadow: "0 6px 20px rgba(16, 185, 129, 0.25)",
           }}
         >
-          {loading && useEnsemble === true ? "Predicting..." : "Ensemble Prediction"}
+          {loading && useEnsemble === true ? "Predicting..." : "🎯 Ensemble"}
         </button>
       </div>
 
       {error && (
-        <div style={{ backgroundColor: "#fee", color: "#c33", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
-          Error: {error}
+        <div style={{ background: "var(--danger-dim)", color: "var(--danger)", padding: "1rem", borderRadius: "var(--radius-md)", marginBottom: "1rem", border: "1px solid var(--danger)" }}>
+          ⚠️ Error: {error}
         </div>
       )}
 
       {loading && !prediction && !ensemblePrediction && (
-        <div style={{ backgroundColor: "#f8f9fa", padding: "1rem", borderRadius: "8px", marginBottom: "1rem", color: "#555" }}>
-          Predicting price — this may take a moment. If external services are unavailable, a model-only estimate will be shown.
+        <div style={{ background: "linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(6, 182, 212, 0.04))", padding: "1.2rem", borderRadius: "var(--radius-md)", marginBottom: "1rem", color: "var(--text-secondary)", border: "1px solid rgba(6, 182, 212, 0.2)" }}>
+          ⏳ Predicting price — this may take a moment. If external services are unavailable, a model-only estimate will be shown.
         </div>
       )}
 
       {prediction && !ensemblePrediction && (
-        <div style={{ backgroundColor: "transparent", padding: "1.5rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
-          <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Price Prediction</h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "1rem",
-            }}
-          >
+        <div className="result-group">
+          <h3>💰 Price Prediction</h3>
+          <div className="form-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: 0 }}>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Predicted Price</p>
-              <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#27ae60" }}>
+              <p className="result-label">Predicted Price</p>
+              <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--success)" }}>
                 {formatPrice(prediction.predicted_price)}
               </p>
             </div>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Confidence Score</p>
-              <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#3498db" }}>
+              <p className="result-label">Confidence Score</p>
+              <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--accent)" }}>
                 {(prediction.confidence * 100).toFixed(1)}%
               </p>
             </div>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Price Range</p>
-              <p style={{ fontSize: "0.9rem" }}>
+              <p className="result-label">Price Range</p>
+              <p style={{ fontSize: "0.95rem", color: "var(--text)" }}>
                 {formatPrice(prediction.uncertainty_range.lower)} - {formatPrice(prediction.uncertainty_range.upper)}
               </p>
             </div>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Model Used</p>
-              <p style={{ fontSize: "0.95rem", fontWeight: 500 }}>{prediction.model_used}</p>
+              <p className="result-label">Model Used</p>
+              <p style={{ fontSize: "0.95rem", fontWeight: 500, color: "var(--text)" }}>{prediction.model_used}</p>
             </div>
           </div>
         </div>
       )}
 
       {ensemblePrediction && (
-        <div style={{ backgroundColor: "transparent", padding: "1.5rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
-          <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Ensemble Prediction (3 Models)</h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "1rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+        <div className="result-group">
+          <h3>🎯 Ensemble Prediction (3 Models)</h3>
+          <div className="form-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Ensemble Price</p>
-              <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#27ae60" }}>
+              <p className="result-label">Ensemble Price</p>
+              <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--success)" }}>
                 {formatPrice(ensemblePrediction.ensemble_price)}
               </p>
             </div>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Consensus Score</p>
-              <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#3498db" }}>
+              <p className="result-label">Consensus Score</p>
+              <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--accent)" }}>
                 {(ensemblePrediction.consensus_score * 100).toFixed(1)}%
               </p>
             </div>
             <div>
-              <p style={{ color: "#666", marginBottom: "0.25rem" }}>Standard Deviation</p>
-              <p style={{ fontSize: "1rem" }}>{formatPrice(ensemblePrediction.std_deviation)}</p>
+              <p className="result-label">Standard Deviation</p>
+              <p style={{ fontSize: "1rem", color: "var(--text)" }}>{formatPrice(ensemblePrediction.std_deviation)}</p>
             </div>
           </div>
 
-          <div style={{ backgroundColor: "#fff", padding: "1rem", borderRadius: "6px" }}>
-            <p style={{ fontWeight: 600, marginBottom: "0.75rem" }}>Individual Model Predictions:</p>
+          <div style={{ background: "rgba(6, 182, 212, 0.05)", padding: "1.2rem", borderRadius: "var(--radius-md)", border: "1px solid rgba(6, 182, 212, 0.15)" }}>
+            <p style={{ fontWeight: 700, marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>📊 Individual Model Predictions:</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem" }}>
               {Object.entries(ensemblePrediction.individual_predictions).map(([model, price]) => (
-                <div key={model} style={{ backgroundColor: "#f9f9f9", padding: "0.75rem", borderRadius: "6px" }}>
-                  <p style={{ fontSize: "0.85rem", color: "#666" }}>{model}</p>
-                  <p style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#2c3e50" }}>
+                <div key={model} style={{ background: "var(--surface-elevated)", padding: "1rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border)", transition: "all var(--transition-base)" }}>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>{model}</p>
+                  <p style={{ fontSize: "1.2rem", fontWeight: "bold", color: "var(--accent)" }}>
                     {formatPrice(price as number)}
                   </p>
                 </div>

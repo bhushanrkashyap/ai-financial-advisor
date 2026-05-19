@@ -15,13 +15,14 @@ const LOAN_TYPES = {
 };
 
 export function LoanForm({ onPredict, loading }: LoanFormProps) {
-  const [loanType, setLoanType] = useState<keyof typeof LOAN_TYPES>("PERSONAL");
+  // Always use HOME LOAN - no dropdown
+  const loanType = "HOME" as const;
   const [formData, setFormData] = useState({
-    loan_amnt: 500000, // Changed to INR
-    term: 36,
-    int_rate: 12.5,
+    loan_amnt: 2500000, // Home loan default: 25 lakhs
+    term: 240, // 20 years for home loan
+    int_rate: 8.5,
     annual_inc: 750000, // Changed to INR
-    fico_avg: 690,
+    fico_avg: 720,
     dti: 0.25,
     emp_length: 5,
     delinq_2yrs: 1,
@@ -56,17 +57,6 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
     setFormData((prev) => ({ ...prev, [name]: numValue }));
   };
 
-  const handleLoanTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newType = e.target.value as keyof typeof LOAN_TYPES;
-    setLoanType(newType);
-    const config = LOAN_TYPES[newType];
-    setFormData((prev) => ({
-      ...prev,
-      loan_amnt: config.minAmount + (config.maxAmount - config.minAmount) * 0.3,
-      term: config.defaultTerm,
-    }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -95,21 +85,11 @@ export function LoanForm({ onPredict, loading }: LoanFormProps) {
 
   return (
     <div className="card form-card">
-      <h2>Loan Application</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+        <h2 style={{ margin: 0 }}>Home Loan Application</h2>
+        <span className="loan-type-badge">🏠 Home Loan</span>
+      </div>
       <form onSubmit={handleSubmit} className="loan-form">
-        {/* Loan Type Selection */}
-        <div className="form-row">
-          <div className="form-group form-group-full">
-            <label htmlFor="loanType">Type of Loan</label>
-            <select id="loanType" value={loanType} onChange={handleLoanTypeChange} style={{ fontSize: "1rem", padding: "0.75rem" }}>
-              {Object.entries(LOAN_TYPES).map(([key, config]) => (
-                <option key={key} value={key}>
-                  {config.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
 
         {/* Primary Inputs: Salary & FICO */}
         <div className="form-row">

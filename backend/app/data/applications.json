@@ -310,5 +310,77 @@
     "risk_level": "LOW_RISK",
     "prediction": "SAFE",
     "approved": null
+  },
+  {
+    "timestamp": "2026-05-19T09:13:07.588608",
+    "loan_amount": 180000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.25,
+    "interest_rate": 10.3,
+    "default_probability": 0.9999832277081542,
+    "approval_probability": 54.0,
+    "risk_level": "HIGH_RISK",
+    "prediction": "DEFAULT_RISK",
+    "approved": null
+  },
+  {
+    "timestamp": "2026-05-19T09:16:18.957838",
+    "loan_amount": 160000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.47,
+    "interest_rate": 10.3,
+    "default_probability": 0.99999138743597,
+    "approval_probability": 44.5,
+    "risk_level": "HIGH_RISK",
+    "prediction": "DEFAULT_RISK",
+    "approved": null
+  },
+  {
+    "timestamp": "2026-05-19T09:25:38.450949",
+    "loan_amount": 15350000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.25,
+    "interest_rate": 12.5,
+    "default_probability": 2.3722450774554125e-231,
+    "approval_probability": 94.0,
+    "risk_level": "LOW_RISK",
+    "prediction": "SAFE",
+    "approved": null
+  },
+  {
+    "timestamp": "2026-05-19T09:26:18.497895",
+    "loan_amount": 500000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.25,
+    "interest_rate": 12.5,
+    "default_probability": 0.2791885908207953,
+    "approval_probability": 82.83,
+    "risk_level": "LOW_RISK",
+    "prediction": "SAFE",
+    "approved": null
+  },
+  {
+    "timestamp": "2026-05-19T09:50:17.884778",
+    "loan_amount": 700000.0,
+    "fico_score": 719,
+    "dti_ratio": 0.25,
+    "interest_rate": 8.5,
+    "default_probability": 4.690988853307949e-05,
+    "approval_probability": 97.0,
+    "risk_level": "LOW_RISK",
+    "prediction": "SAFE",
+    "approved": null
+  },
+  {
+    "timestamp": "2026-05-19T09:50:32.399913",
+    "loan_amount": 7000000.0,
+    "fico_score": 690,
+    "dti_ratio": 0.25,
+    "interest_rate": 8.5,
+    "default_probability": 3.5990964686313987e-103,
+    "approval_probability": 94.0,
+    "risk_level": "LOW_RISK",
+    "prediction": "SAFE",
+    "approved": null
   }
 ]

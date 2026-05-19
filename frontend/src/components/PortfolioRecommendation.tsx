@@ -83,69 +83,55 @@ export function PortfolioRecommendation() {
 
   return (
     <div className="card" style={{ marginTop: "2rem" }}>
-      <h2>Portfolio Optimization & Allocation</h2>
-      <p style={{ color: "#666", marginBottom: "1.5rem" }}>
+      <h2>💼 Investment Portfolio</h2>
+      <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem", fontSize: "0.95rem" }}>
         Get personalized investment allocation using Modern Portfolio Theory
       </p>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "1.5rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem", marginBottom: "1.5rem" }}>
         <div>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-            Risk Tolerance Level
+          <label style={{ display: "block", marginBottom: "0.8rem", fontWeight: 700, color: "var(--text-secondary)", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            🎯 Risk Tolerance Level
           </label>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
             {(["conservative", "moderate", "aggressive"] as const).map((level) => (
               <button
                 key={level}
                 onClick={() => setRiskLevel(level)}
                 style={{
-                  flex: 1,
-                  padding: "0.75rem",
-                  backgroundColor: riskLevel === level ? getRiskColor(level) : "#e0e0e0",
-                  color: riskLevel === level ? "#fff" : "#333",
-                  border: "none",
-                  borderRadius: "6px",
+                  flex: "1 1 130px",
+                  padding: "0.85rem 1rem",
+                  backgroundColor: riskLevel === level ? getRiskColor(level) : "rgba(255,255,255,0.05)",
+                  color: riskLevel === level ? "#fff" : "var(--text-secondary)",
+                  border: riskLevel === level ? "none" : "1.5px solid var(--border)",
+                  borderRadius: "var(--radius-md)",
                   cursor: "pointer",
-                  fontWeight: 500,
+                  fontWeight: 700,
                   textTransform: "capitalize",
-                  transition: "all 0.3s ease",
+                  transition: "all var(--transition-base)",
+                  fontSize: "0.9rem",
+                  boxShadow: riskLevel === level ? `0 6px 20px ${getRiskColor(level)}40` : "none",
                 }}
               >
                 {level}
               </button>
             ))}
           </div>
-          <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.5rem" }}>
+          <p style={{ fontSize: "0.85rem", color: "var(--text-tertiary)", marginTop: "0.8rem" }}>
             {getRiskDescription(riskLevel)}
           </p>
         </div>
 
-        <div>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-            Annual Income (₹)
-          </label>
+        <div className="form-group">
+          <label>💰 Annual Income (₹)</label>
           <input
             type="number"
             value={annualIncome}
             onChange={(e) => setAnnualIncome(parseFloat(e.target.value))}
             placeholder="600000"
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              border: "2px solid #e0e0e0",
-              borderRadius: "6px",
-              fontSize: "1rem",
-            }}
           />
-          <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.5rem" }}>
-            Monthly Income: ₹{(annualIncome / 12).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+          <p style={{ fontSize: "0.85rem", color: "var(--text-tertiary)", marginTop: "0.5rem" }}>
+            📅 Monthly Income: <strong style={{ color: "var(--text)" }}>₹{(annualIncome / 12).toLocaleString("en-IN", { maximumFractionDigits: 0 })}</strong>
           </p>
         </div>
       </div>
@@ -153,62 +139,39 @@ export function PortfolioRecommendation() {
       <button
         onClick={getRecommendation}
         disabled={loading}
-        style={{
-          padding: "0.75rem 2rem",
-          backgroundColor: "#3498db",
-          color: "#fff",
-          border: "none",
-          borderRadius: "8px",
-          cursor: loading ? "not-allowed" : "pointer",
-          marginBottom: "1.5rem",
-          fontSize: "0.95rem",
-          fontWeight: 500,
-          opacity: loading ? 0.6 : 1,
-        }}
+        className="submit-btn"
+        style={{ width: "100%", marginBottom: "1.5rem" }}
       >
-        {loading ? "Calculating..." : "Get Recommendation"}
+        {loading ? "⏳ Calculating..." : "✨ Get Recommendation"}
       </button>
 
       {error && (
-        <div style={{ backgroundColor: "#fee", color: "#c33", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
-          Error: {error}
+        <div style={{ background: "var(--danger-dim)", color: "var(--danger)", padding: "1rem", borderRadius: "var(--radius-md)", marginBottom: "1rem", border: "1px solid var(--danger)" }}>
+          ⚠️ Error: {error}
         </div>
       )}
 
       {portfolio && (
-        <div style={{ backgroundColor: "#f5f5f5", padding: "1.5rem", borderRadius: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {/* Performance Metrics */}
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "1.5rem",
-              borderRadius: "8px",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Portfolio Performance Metrics</h3>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                gap: "1rem",
-              }}
-            >
-              <div style={{ padding: "1rem", backgroundColor: "#f0fff0", borderRadius: "6px" }}>
-                <p style={{ color: "#666", marginBottom: "0.25rem", fontSize: "0.85rem" }}>Expected Annual Return</p>
-                <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#27ae60" }}>
+          <div className="result-group">
+            <h3>📊 Portfolio Performance Metrics</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1.2rem" }}>
+              <div style={{ padding: "1.2rem", background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05))", borderRadius: "var(--radius-md)", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                <p className="result-label">Expected Annual Return</p>
+                <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--success)" }}>
                   {(portfolio.expected_annual_return * 100).toFixed(2)}%
                 </p>
               </div>
-              <div style={{ padding: "1rem", backgroundColor: "#f0f8ff", borderRadius: "6px" }}>
-                <p style={{ color: "#666", marginBottom: "0.25rem", fontSize: "0.85rem" }}>Risk (Volatility)</p>
-                <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#e74c3c" }}>
+              <div style={{ padding: "1.2rem", background: "linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05))", borderRadius: "var(--radius-md)", border: "1px solid rgba(239, 68, 68, 0.2)" }}>
+                <p className="result-label">Risk (Volatility)</p>
+                <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--danger)" }}>
                   {(portfolio.volatility * 100).toFixed(2)}%
                 </p>
               </div>
-              <div style={{ padding: "1rem", backgroundColor: "#fff0f5", borderRadius: "6px" }}>
-                <p style={{ color: "#666", marginBottom: "0.25rem", fontSize: "0.85rem" }}>Sharpe Ratio</p>
-                <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#9b59b6" }}>
+              <div style={{ padding: "1.2rem", background: "linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.05))", borderRadius: "var(--radius-md)", border: "1px solid rgba(6, 182, 212, 0.2)" }}>
+                <p className="result-label">Sharpe Ratio</p>
+                <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--accent)" }}>
                   {portfolio.sharpe_ratio.toFixed(2)}
                 </p>
               </div>
@@ -216,28 +179,15 @@ export function PortfolioRecommendation() {
           </div>
 
           {/* Asset Allocation */}
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "1.5rem",
-              borderRadius: "8px",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Recommended Asset Allocation</h3>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-                gap: "1rem",
-              }}
-            >
+          <div className="result-group">
+            <h3>🎯 Recommended Asset Allocation</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "1.5rem" }}>
               {Object.entries(portfolio.allocation).map(([asset, percentage]) => {
                 const colors: Record<string, string> = {
-                  stocks: "#3498db",
-                  bonds: "#27ae60",
-                  gold: "#f39c12",
-                  cash: "#95a5a6",
+                  stocks: "#06b6d4",
+                  bonds: "#10b981",
+                  gold: "#f59e0b",
+                  cash: "#8b5cf6",
                 };
                 return (
                   <div key={asset} style={{ textAlign: "center" }}>
@@ -246,27 +196,36 @@ export function PortfolioRecommendation() {
                         width: "120px",
                         height: "120px",
                         borderRadius: "50%",
-                        backgroundColor: colors[asset] || "#3498db",
+                        background: `linear-gradient(135deg, ${colors[asset] || "#3498db"}, ${colors[asset] || "#3498db"}dd)`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        margin: "0 auto 0.5rem",
+                        margin: "0 auto 0.8rem",
                         color: "#fff",
-                        fontSize: "1.5rem",
+                        fontSize: "2rem",
                         fontWeight: "bold",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                        boxShadow: `0 8px 24px ${colors[asset] || "#3498db"}40`,
+                        transition: "all var(--transition-base)",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLElement).style.transform = "scale(1.05)";
+                        (e.target as HTMLElement).style.boxShadow = `0 12px 32px ${colors[asset] || "#3498db"}60`;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLElement).style.transform = "scale(1)";
+                        (e.target as HTMLElement).style.boxShadow = `0 8px 24px ${colors[asset] || "#3498db"}40`;
                       }}
                     >
                       {(percentage * 100).toFixed(0)}%
                     </div>
-                    <p style={{ fontWeight: 600, textTransform: "capitalize", marginBottom: "0.25rem" }}>
+                    <p style={{ fontWeight: 700, textTransform: "capitalize", marginBottom: "0.5rem", color: "var(--text)" }}>
                       {asset}
                     </p>
-                    <p style={{ fontSize: "0.85rem", color: "#666" }}>
+                    <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
                       ₹{(portfolio.allocation_decimal[asset] * (annualIncome / 12)).toLocaleString("en-IN", {
                         maximumFractionDigits: 0,
-                      })}
-                      /month
+                      })}/month
                     </p>
                   </div>
                 );
@@ -275,26 +234,18 @@ export function PortfolioRecommendation() {
           </div>
 
           {/* Investment Summary */}
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "1.5rem",
-              borderRadius: "8px",
-              marginBottom: "1.5rem",
-              borderLeft: "4px solid #3498db",
-            }}
-          >
-            <h3 style={{ marginBottom: "1rem", color: "var(--text)", fontSize: "0.95rem" }}>Investment Summary</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div className="result-group" style={{ borderLeft: "4px solid var(--accent)" }}>
+            <h3>💡 Investment Summary</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem" }}>
               <div>
-                <p style={{ color: "#666", marginBottom: "0.25rem" }}>Monthly Investment</p>
-                <p style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#2c3e50" }}>
+                <p className="result-label">Monthly Investment</p>
+                <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--accent)" }}>
                   ₹{portfolio.monthly_investment.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                 </p>
               </div>
               <div>
-                <p style={{ color: "#666", marginBottom: "0.25rem" }}>Annual Investment</p>
-                <p style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#2c3e50" }}>
+                <p className="result-label">Annual Investment</p>
+                <p style={{ fontSize: "1.8rem", fontWeight: "bold", color: "var(--accent)" }}>
                   ₹{portfolio.annual_investment.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
                 </p>
               </div>
@@ -303,16 +254,9 @@ export function PortfolioRecommendation() {
 
           {/* Notes */}
           {portfolio.notes && (
-            <div
-              style={{
-                backgroundColor: "#fffacd",
-                padding: "1rem",
-                borderRadius: "6px",
-                borderLeft: "4px solid #f39c12",
-              }}
-            >
-              <p style={{ fontWeight: 600, marginBottom: "0.5rem", color: "#2c3e50" }}>📝 Portfolio Notes:</p>
-              <p style={{ color: "#555", lineHeight: "1.6" }}>{portfolio.notes}</p>
+            <div style={{ background: "linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05))", padding: "1.2rem", borderRadius: "var(--radius-md)", borderLeft: "4px solid var(--warning)" }}>
+              <p style={{ fontWeight: 700, marginBottom: "0.8rem", color: "var(--text)", fontSize: "0.95rem" }}>📝 Portfolio Recommendations:</p>
+              <p style={{ color: "var(--text-secondary)", lineHeight: 1.6 }}>{portfolio.notes}</p>
             </div>
           )}
         </div>
